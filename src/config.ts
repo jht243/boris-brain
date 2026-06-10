@@ -29,5 +29,6 @@ export const CORPUS_LIMIT = 200;
 // Embeddings stay on OpenAI (used only to build/query the RAG index).
 export const EMBEDDING_MODEL = "text-embedding-3-small";
 
-// Article generation runs on Anthropic Claude (best writing quality / least AI-tell prose).
-export const GENERATION_MODEL = "claude-opus-4-8";
+// Article generation runs on Anthropic Claude. Sonnet 4.6 is much faster than Opus per call,
+// which keeps a full multi-call generation inside Render's request window, with near-Opus quality.
+export const GENERATION_MODEL = "claude-sonnet-4-6";
