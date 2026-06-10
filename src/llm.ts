@@ -42,9 +42,9 @@ function extractJson(s: string): string {
 
 export async function complete(opts: CompleteOptions): Promise<string> {
   const anthropic = getAnthropic();
-  // Prefill an opening brace when we want JSON so Claude returns the object directly.
+  // claude-opus-4-8 does not support assistant-message prefill, so we ask for JSON in the
+  // prompt and extract the first {...} block from the reply.
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: opts.user }];
-  if (opts.json) messages.push({ role: "assistant", content: "{" });
 
   const res = await anthropic.messages.create({
     model: GENERATION_MODEL,
@@ -60,7 +60,7 @@ export async function complete(opts: CompleteOptions): Promise<string> {
     .trim();
 
   // Re-attach the prefilled brace that Claude continued from.
-  return opts.json ? extractJson("{" + text) : text;
+  return opts.json ? extractJson(text) : text;
 }
 
 export async function completeJson<T>(opts: Omit<CompleteOptions, "json">): Promise<T> {
