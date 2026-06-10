@@ -49,7 +49,6 @@ export async function complete(opts: CompleteOptions): Promise<string> {
   const res = await anthropic.messages.create({
     model: GENERATION_MODEL,
     max_tokens: opts.maxTokens ?? 4096,
-    temperature: opts.temperature ?? 0.45,
     system: [{ type: "text", text: opts.system, cache_control: { type: "ephemeral" } }],
     messages,
   });
