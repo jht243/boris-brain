@@ -17,12 +17,12 @@
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
     "express": "^4.22.2",
-    "openai": "^4.77.0"
+    "openai": "^4.77.0",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^22.10.2",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }
