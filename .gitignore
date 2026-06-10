@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+output/
+data/embeddings/index.json
+data/corpus/posts.json
+data/corpus/posts/

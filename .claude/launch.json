@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "node_modules/.bin/tsx",
+      "runtimeArgs": ["scripts/dashboard.ts"],
+      "port": 3050,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Axis Brain — AI CRM Blog Generator</title>
+<style>
+  :root {
+    --ink: #1c2024;
+    --ink-soft: #3a4047;
+    --muted: #6b7280;
+    --bg: #f6f7f8;
+    --panel: #ffffff;
+    --border: #e4e7ea;
+    --border-strong: #cdd2d8;
+    --accent: #e0592a;      /* Axis orange */
+    --accent-dark: #c2461c;
+    --accent-soft: #fdf0ea;
+    --charcoal: #20262c;
+    --green: #1f8a4c;
+    --green-bg: #e8f5ee;
+    --red: #c0392b;
+    --red-bg: #fbeceb;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    --mono: "SF Mono", ui-monospace, "Menlo", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: var(--charcoal); color: #fff; }
+  header .brand { display: flex; align-items: center; gap: 12px; }
+  header .logo { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; font-weight: 800; color: #fff; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+  header .sub { font-size: 12px; color: #aab2bb; }
+  .wrap { display: grid; grid-template-columns: 320px 1fr 340px; gap: 16px; padding: 16px; max-width: 1500px; margin: 0 auto; align-items: start; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .chip { border: 1px solid var(--border-strong); background: #fff; color: var(--ink-soft); border-radius: 8px; padding: 9px 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; text-align: left; transition: all .12s; }
+  .chip:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-soft); }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 14px 0 5px; font-weight: 600; }
+  input[type=text] { width: 100%; padding: 9px 11px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 13.5px; font-family: var(--sans); }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  .btn { width: 100%; margin-top: 14px; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .12s; }
+  .btn:hover { background: var(--accent-dark); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-ghost { background: #fff; color: var(--ink-soft); border: 1px solid var(--border-strong); width: auto; padding: 7px 13px; margin: 0; font-size: 12.5px; border-radius: 8px; cursor: pointer; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent-dark); }
+  .drafts { margin-top: 16px; }
+  .draft-item { padding: 8px 10px; border-radius: 7px; cursor: pointer; font-size: 12.5px; color: var(--ink-soft); border: 1px solid transparent; }
+  .draft-item:hover { background: var(--accent-soft); border-color: var(--border); }
+  .draft-item .t { font-weight: 600; color: var(--ink); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .draft-item .d { font-size: 11px; color: var(--muted); }
+  .draft-item.sample { opacity: .5; }
+  .draft-item.sample:hover { opacity: .72; }
+  .draft-item.sample .t { color: var(--muted); font-weight: 500; }
+  .badge-sample { display: inline-block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: #eef0f2; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
+
+  .article-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .toolbar { display: flex; gap: 7px; }
+  #render { font-size: 15px; color: #23282d; }
+  #render h1 { font-size: 26px; line-height: 1.25; margin: 6px 0 14px; }
+  #render h2 { font-size: 20px; margin: 26px 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+  #render h3 { font-size: 16px; margin: 18px 0 7px; }
+  #render p { margin: 0 0 13px; }
+  #render ul, #render ol { margin: 0 0 14px; padding-left: 22px; }
+  #render li { margin: 4px 0; }
+  #render a { color: var(--accent-dark); }
+  #render code { background: #f0f2f4; padding: 1px 5px; border-radius: 4px; font-family: var(--mono); font-size: 13px; }
+  #render .meta-line { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 8px 12px; font-size: 13px; color: var(--ink-soft); border-radius: 0 6px 6px 0; margin-bottom: 16px; }
+  #editor { width: 100%; min-height: 70vh; border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; font-family: var(--mono); font-size: 13px; line-height: 1.6; resize: vertical; }
+  .empty { color: var(--muted); text-align: center; padding: 80px 20px; font-size: 14px; }
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -2px; margin-right: 7px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .score-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .gauge { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 22px; color: #fff; flex-shrink: 0; }
+  .score-meta { font-size: 12.5px; color: var(--muted); }
+  .score-meta b { color: var(--ink); font-size: 15px; }
+  .check { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0f2f4; font-size: 12.5px; }
+  .check .icon { flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; color: #fff; margin-top: 1px; font-weight: 700; }
+  .check.pass .icon { background: var(--green); }
+  .check.fail .icon { background: var(--red); }
+  .check .lbl { font-weight: 600; color: var(--ink); }
+  .check .det { color: var(--muted); font-size: 11.5px; }
+  .tells { margin-top: 12px; background: var(--red-bg); border: 1px solid #f3c8c4; border-radius: 8px; padding: 10px 12px; }
+  .tells h3 { margin: 0 0 6px; font-size: 12px; color: var(--red); text-transform: uppercase; letter-spacing: .5px; }
+  .tells ul { margin: 0; padding-left: 16px; font-size: 12px; color: var(--ink-soft); }
+  .tells.clean { background: var(--green-bg); border-color: #bfe3cd; }
+  .tells.clean h3 { color: var(--green); }
+  .seo-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 40px 10px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">A</div>
+    <div>
+      <h1>Axis Brain</h1>
+      <div class="sub">AI blog generator · trained on axisconsulting.io</div>
+    </div>
+  </div>
+  <div class="sub">Theme: using AI to improve CRM data</div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <h2>Generate an article</h2>
+    <div class="grid" id="presets"></div>
+    <label for="topic">Custom topic / CRM</label>
+    <input type="text" id="topic" placeholder="e.g. AI for Copper CRM" />
+    <label for="keyword">Primary SEO keyword (optional)</label>
+    <input type="text" id="keyword" placeholder="defaults to the topic" />
+    <button class="btn" id="genBtn">Generate article</button>
+
+    <div class="drafts">
+      <h2 style="margin-top:20px">Recent drafts</h2>
+      <div id="draftList"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="article-head">
+      <h2 id="articleTitle" style="margin:0">Article</h2>
+      <div class="toolbar" id="toolbar" style="display:none">
+        <button class="btn-ghost" id="editToggle">Edit</button>
+        <button class="btn-ghost" id="copyBtn">Copy</button>
+        <button class="btn-ghost" id="saveBtn" style="display:none">Save</button>
+      </div>
+    </div>
+    <div id="render"><div class="empty">Pick a preset or type a topic, then hit <b>Generate</b>.<br/>Each article is SEO-optimized with an FAQ, a CTA, and a human-voice check.</div></div>
+    <textarea id="editor" style="display:none"></textarea>
+  </div>
+
+  <div class="panel">
+    <h2>SEO checker</h2>
+    <div id="seoBody"><div class="seo-empty">SEO score and checklist appear here after you generate or edit an article.</div></div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let currentPath = null;
+let currentKeyword = "";
+let editing = false;
+
+function gaugeColor(score) {
+  if (score >= 90) return "#1f8a4c";
+  if (score >= 80) return "#3a9d5d";
+  if (score >= 70) return "#b7791f";
+  if (score >= 60) return "#d98324";
+  return "#c0392b";
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function inline(s){
+  return esc(s)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>');
+}
+function renderMd(md){
+  const lines = md.split("\n");
+  let html = "", list = null;
+  const closeList = () => { if (list){ html += `</${list}>`; list = null; } };
+  for (let raw of lines){
+    const line = raw.replace(/\s+$/,"");
+    if (/^\*\*Meta description:\*\*/i.test(line)) { closeList(); html += `<div class="meta-line">${inline(line.replace(/^\*\*Meta description:\*\*\s*/i,'**Meta:** '))}</div>`; continue; }
+    let m;
+    if ((m = line.match(/^###\s+(.*)/))) { closeList(); html += `<h3>${inline(m[1])}</h3>`; }
+    else if ((m = line.match(/^##\s+(.*)/))) { closeList(); html += `<h2>${inline(m[1])}</h2>`; }
+    else if ((m = line.match(/^#\s+(.*)/))) { closeList(); html += `<h1>${inline(m[1])}</h1>`; }
+    else if ((m = line.match(/^\s*[-*]\s+(.*)/))) { if (list!=="ul"){closeList(); html+="<ul>"; list="ul";} html += `<li>${inline(m[1])}</li>`; }
+    else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list!=="ol"){closeList(); html+="<ol>"; list="ol";} html += `<li>${inline(m[1])}</li>`; }
+    else if (line.trim()==="") { closeList(); }
+    else { closeList(); html += `<p>${inline(line)}</p>`; }
+  }
+  closeList();
+  return html;
+}
+
+function renderSeo(seo){
+  if (!seo){ $("seoBody").innerHTML = '<div class="seo-empty">No SEO data.</div>'; return; }
+  const col = gaugeColor(seo.score);
+  const checks = seo.checks.map(c => `
+    <div class="check ${c.pass?'pass':'fail'}">
+      <div class="icon">${c.pass?'✓':'✕'}</div>
+      <div><span class="lbl">${esc(c.label)}</span><br/><span class="det">${esc(c.detail)}</span></div>
+    </div>`).join("");
+  const tells = seo.aiTells && seo.aiTells.length
+    ? `<div class="tells"><h3>AI-tell flags (${seo.aiTells.length})</h3><ul>${seo.aiTells.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`
+    : `<div class="tells clean"><h3>Reads human</h3><div style="font-size:12px;color:#1f8a4c">No AI-generated tells detected.</div></div>`;
+  $("seoBody").innerHTML = `
+    <div class="score-row">
+      <div class="gauge" style="background:${col}">${seo.score}</div>
+      <div class="score-meta">
+        Grade <b>${seo.grade}</b><br/>
+        <b>${seo.wordCount}</b> words · ~${seo.readingTimeMin} min<br/>
+        Keyword: <b>${esc(seo.keyword||'—')}</b>
+      </div>
+    </div>
+    ${checks}
+    ${tells}`;
+}
+
+async function loadPresets(){
+  const r = await fetch("/api/topics"); const { topics } = await r.json();
+  window._topics = topics;
+  $("presets").innerHTML = topics.map((t,i)=>`<button class="chip" data-i="${i}">${esc(t.label)}</button>`).join("");
+  $("presets").querySelectorAll(".chip").forEach(btn => btn.onclick = () => {
+    const t = window._topics[btn.dataset.i];
+    $("topic").value = t.topic; $("keyword").value = t.keyword; generate();
+  });
+}
+
+async function loadDrafts(){
+  const r = await fetch("/api/drafts"); const { drafts } = await r.json();
+  $("draftList").innerHTML = drafts.length ? drafts.map(d=>`
+    <div class="draft-item${d.sample?' sample':''}" data-p="${encodeURIComponent(d.path)}">
+      <span class="t">${esc(d.title)}${d.sample?'<span class="badge-sample">sample</span>':''}</span>
+      <span class="d">${new Date(d.mtime).toLocaleString()}</span>
+    </div>`).join("") : '<div class="seo-empty" style="padding:14px">No drafts yet.</div>';
+  $("draftList").querySelectorAll(".draft-item").forEach(it => it.onclick = () => openDraft(decodeURIComponent(it.dataset.p)));
+}
+
+async function openDraft(path){
+  const r = await fetch("/api/draft?path="+encodeURIComponent(path));
+  if (!r.ok) return;
+  const { content } = await r.json();
+  currentPath = path;
+  setContent(content);
+  const s = await (await fetch("/api/seo",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({content, keyword: currentKeyword})})).json();
+  renderSeo(s.seo);
+}
+
+function setContent(md){
+  $("editor").value = md;
+  $("render").innerHTML = renderMd(md);
+  $("toolbar").style.display = "flex";
+  const title = (md.match(/^#\s+(.+)/m)||[])[1] || "Article";
+  $("articleTitle").textContent = title.slice(0,60);
+}
+
+async function generate(){
+  const topic = $("topic").value.trim();
+  const keyword = $("keyword").value.trim();
+  if (topic.length < 3){ $("topic").focus(); return; }
+  currentKeyword = keyword || topic;
+  const btn = $("genBtn");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Writing & optimizing…';
+  $("render").innerHTML = '<div class="empty"><span class="spinner" style="border-top-color:#e0592a;border-color:#f0d4c8"></span><br/>Generating, scoring SEO, and revising for human voice. This takes ~30-60s.</div>';
+  $("seoBody").innerHTML = '<div class="seo-empty">Scoring…</div>';
+  try{
+    const r = await fetch("/api/generate",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({topic, keyword: keyword||undefined})});
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error||"failed");
+    currentPath = data.outputPath;
+    setContent(data.draft);
+    renderSeo(data.seo);
+    loadDrafts();
+  } catch(e){
+    $("render").innerHTML = '<div class="empty" style="color:#c0392b">Error: '+esc(String(e.message||e))+'</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = "Generate article";
+  }
+}
+
+async function rescore(){
+  const content = $("editor").value;
+  $("render").innerHTML = renderMd(content);
+  const s = await (await fetch("/api/seo",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({content, keyword: currentKeyword})})).json();
+  renderSeo(s.seo);
+}
+
+$("genBtn").onclick = generate;
+$("topic").addEventListener("keydown", e => { if (e.key==="Enter") generate(); });
+$("keyword").addEventListener("keydown", e => { if (e.key==="Enter") generate(); });
+
+$("editToggle").onclick = () => {
+  editing = !editing;
+  $("editor").style.display = editing ? "block" : "none";
+  $("render").style.display = editing ? "none" : "block";
+  $("saveBtn").style.display = editing ? "inline-block" : "none";
+  $("editToggle").textContent = editing ? "Preview" : "Edit";
+  if (!editing) rescore();
+};
+let editTimer;
+$("editor").addEventListener("input", () => { clearTimeout(editTimer); editTimer = setTimeout(rescore, 600); });
+
+$("copyBtn").onclick = () => { navigator.clipboard.writeText($("editor").value); $("copyBtn").textContent = "Copied!"; setTimeout(()=>$("copyBtn").textContent="Copy",1200); };
+
+$("saveBtn").onclick = async () => {
+  if (!currentPath) return;
+  await fetch("/api/draft/save",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({path: currentPath, content: $("editor").value})});
+  $("saveBtn").textContent = "Saved!"; setTimeout(()=>$("saveBtn").textContent="Save",1200);
+  loadDrafts();
+};
+
+loadPresets();
+loadDrafts();
+</script>
+</body>
+</html>
