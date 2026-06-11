@@ -17,9 +17,10 @@ export const PATHS = {
 // Axis Consulting — CRM & sales-automation consultancy (WordPress + Yoast).
 export const BRAND = {
   name: "Axis Consulting",
-  site: "https://www.axisconsulting.io",
-  // Phone / CTA destination shown in generated CTAs. Adjust as needed.
-  ctaUrl: "https://www.axisconsulting.io/contact",
+  site: "https://axisconsulting.io",
+  // Matches their site's own header CTA (no www, trailing slash).
+  // Alt for direct booking: https://calendly.com/axisconsulting/consultation-30min
+  ctaUrl: "https://axisconsulting.io/contact/",
   tagline: "CRM implementation, workflow automation, and revenue operations",
 };
 
