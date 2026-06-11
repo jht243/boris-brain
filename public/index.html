@@ -111,6 +111,10 @@
   .tells.clean { background: var(--green-bg); border-color: #bfe3cd; }
   .tells.clean h3 { color: var(--green); }
   .seo-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 40px 10px; }
+  .sources-h2 { margin: 18px 0 4px !important; border-top: 1px solid var(--border); padding-top: 16px; }
+  .src-note { font-size: 11.5px; color: var(--muted); margin: 0 0 9px; }
+  .source-item { display: block; font-size: 12.5px; font-weight: 600; color: var(--accent-dark); text-decoration: none; padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px; margin-bottom: 6px; transition: all .12s; }
+  .source-item:hover { background: var(--accent-soft); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -152,6 +156,11 @@
   <div class="panel">
     <h2>SEO checker</h2>
     <div id="seoBody"><div class="seo-empty">SEO score and checklist appear here after you generate or edit an article.</div></div>
+    <div id="sourcesBlock" style="display:none">
+      <h2 class="sources-h2">Modeled on your articles</h2>
+      <p class="src-note">Built from these real Axis Consulting posts in the brain:</p>
+      <div id="sourcesList"></div>
+    </div>
   </div>
 </div>
 
@@ -219,6 +228,15 @@ function renderSeo(seo){
     </div>
     ${checks}
     ${tells}`;
+}
+
+function renderSources(sources){
+  const b = $("sourcesBlock");
+  if (!sources || !sources.length){ b.style.display = "none"; return; }
+  $("sourcesList").innerHTML = sources.map(s => s.url
+    ? `<a class="source-item" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`
+    : `<span class="source-item">${esc(s.title)}</span>`).join("");
+  b.style.display = "block";
 }
 
 async function loadPresets(){
@@ -309,6 +327,7 @@ async function generate(){
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Drafting…';
   startGen(DRAFT_MSGS, 1);
   $("seoBody").innerHTML = '<div class="seo-empty">Drafting…</div>';
+  renderSources(null);
   const show = (d) => { stopGen(); setContent(d.draft); renderSeo(d.seo); };
   try{
     // Stage 1: draft + SEO score (fast, parallel) — its own request.
@@ -316,6 +335,7 @@ async function generate(){
     const data = await r.json();
     if (!r.ok) throw new Error(data.error||"failed");
     currentPath = data.outputPath;
+    renderSources(data.sources); // the real Axis posts this draft was modeled on (persists through stage 2)
 
     // Stage 2: if SEO < 90, run one revision pass as a SEPARATE request — keep the brain animating.
     if (data.seo && data.seo.score < 90){

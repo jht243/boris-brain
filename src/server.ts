@@ -47,12 +47,12 @@ export function createServer(client: OpenAI) {
     }
     const outPath = path.join(PATHS.outputDir, `${Date.now()}-${slugify(keyword || topic)}.md`);
     try {
-      const { draft, seo } = await draftArticle(client, {
+      const { draft, seo, sources } = await draftArticle(client, {
         topic: topic.trim(),
         keyword: keyword?.trim() || undefined,
         outputPath: outPath,
       });
-      res.json({ draft, seo, outputPath: path.relative(PATHS.root, outPath) });
+      res.json({ draft, seo, sources, outputPath: path.relative(PATHS.root, outPath) });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: String(err) });

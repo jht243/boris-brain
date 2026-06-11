@@ -2,7 +2,7 @@ import fs from "node:fs";
 import OpenAI from "openai";
 import { BRAND, PATHS } from "./config.js";
 import { complete, completeJson } from "./llm.js";
-import { retrieveSimilar, retrieveFullPosts, type IndexedChunk } from "./rag.js";
+import { retrieveSimilar, retrieveFullPosts, loadCorpus, type IndexedChunk } from "./rag.js";
 import { scoreSeo, type SeoReport } from "./seo.js";
 
 const TEMP = 0.5;
@@ -24,9 +24,16 @@ export interface GenerateOptions {
   outputPath?: string;
 }
 
+export interface ArticleSource {
+  title: string;
+  url: string;
+}
+
 export interface GenerateResult {
   draft: string;
   seo: SeoReport;
+  /** The real Axis posts this draft was modeled on (RAG exemplars + retrieved passages). */
+  sources?: ArticleSource[];
 }
 
 interface ArticlePlan {
@@ -256,6 +263,18 @@ export async function draftArticle(
   const exemplars = renderExemplars(fullPosts);
   const snippets = renderSnippets(chunks);
 
+  // Build the "modeled on" source list: the 2 full exemplars first, then distinct posts the
+  // retrieved passages came from. Resolve each slug to its public URL via the corpus.
+  const bySlug = new Map(loadCorpus().map((p) => [p.slug, p]));
+  const sourceMap = new Map<string, ArticleSource>();
+  for (const p of fullPosts) sourceMap.set(p.slug, { title: p.title, url: p.link });
+  for (const c of chunks) {
+    if (sourceMap.has(c.postSlug)) continue;
+    const post = bySlug.get(c.postSlug);
+    if (post) sourceMap.set(c.postSlug, { title: post.title, url: post.link });
+  }
+  const sources = [...sourceMap.values()].slice(0, 6);
+
   const plan = await planArticle(system, styleGuide, exemplars, topic, keyword);
   const allHeadings = plan.sections.map((s) => s.h2);
 
@@ -272,7 +291,7 @@ export async function draftArticle(
   const seo = scoreSeo(draft, keyword);
   console.log(`Draft: ${seo.score}/100 (${seo.grade}), ${seo.wordCount} words`);
   writeDraftFile(options.outputPath, draft);
-  return { draft, seo };
+  return { draft, seo, sources };
 }
 
 /**
@@ -308,7 +327,8 @@ export async function generateArticle(
   const draft = await draftArticle(openai, { ...options, outputPath: undefined });
   let best = draft;
   if (draft.seo.score < 90) {
-    best = await reviseArticle({ draft: draft.draft, keyword, outputPath: undefined });
+    const revised = await reviseArticle({ draft: draft.draft, keyword, outputPath: undefined });
+    best = { ...revised, sources: draft.sources };
   }
   writeDraftFile(options.outputPath, best.draft);
   return best;
