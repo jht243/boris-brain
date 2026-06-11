@@ -190,7 +190,8 @@
   .scorecard.opp { background: var(--green-bg); border-color: #bfe3cd; }
   .scorecard.opp .sc-value { color: var(--green); }
 
-  .crm-cols { display: grid; grid-template-columns: 1fr 380px; gap: 16px; align-items: start; }
+  /* AI insights = hero (wide, left). Raw deal data = compact rail (right). */
+  .crm-cols { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
   @media (max-width: 1080px) { .crm-cols { grid-template-columns: 1fr; } .scorecards { grid-template-columns: repeat(2, 1fr); } }
 
   .seg-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
@@ -203,26 +204,30 @@
   .seg-card .seg-value { font-size: 11.5px; font-weight: 600; color: var(--accent-dark); }
   .seg-card .seg-blurb { font-size: 10.5px; color: var(--muted); margin-top: 5px; line-height: 1.35; }
 
-  .deal-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .deal-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .deal-panel-head h3 { font-size: 14px; margin: 0; font-weight: 700; }
-  .deal-panel-head .hint { font-size: 11.5px; color: var(--muted); }
-  .bulk-actions { display: flex; gap: 6px; }
-  .act-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--border-strong); border-radius: 7px; padding: 6px 10px; cursor: pointer; transition: all .12s; }
+  /* ---- Raw deal data: compact right rail ---- */
+  .deal-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: sticky; top: 16px; }
+  .deal-panel-head { margin-bottom: 10px; }
+  .deal-panel-head h3 { font-size: 13px; margin: 0; font-weight: 700; }
+  .deal-panel-head .hint { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+  .bulk-actions { display: flex; gap: 5px; margin-bottom: 10px; }
+  .act-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--border-strong); border-radius: 7px; padding: 6px 8px; cursor: pointer; transition: all .12s; white-space: nowrap; }
   .act-btn:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-soft); }
-  .act-btn .ci { width: 13px; height: 13px; }
+  .act-btn .ci { width: 12px; height: 12px; flex-shrink: 0; }
   .act-btn:disabled { opacity: .5; cursor: default; }
+  .bulk-actions .act-btn { flex: 1; }
 
-  table.deals { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.deals th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; padding: 6px 8px; border-bottom: 1px solid var(--border-strong); white-space: nowrap; }
-  table.deals td { padding: 9px 8px; border-bottom: 1px solid #f0f2f4; vertical-align: middle; }
-  table.deals tr:last-child td { border-bottom: 0; }
-  table.deals tr:hover td { background: #fafbfc; }
-  .deal-org { font-weight: 700; color: var(--ink); }
-  .deal-id { font-size: 10.5px; color: var(--muted); font-family: var(--mono); }
-  .deal-meta { font-size: 11px; color: var(--muted); }
-  .deal-val { font-weight: 700; color: var(--ink); white-space: nowrap; }
-  .stage-tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; background: #eef0f2; color: var(--ink-soft); border: 1px solid var(--border); }
+  #dealTableWrap { max-height: 62vh; overflow-y: auto; margin: 0 -4px; }
+  .deal-row { display: flex; gap: 9px; align-items: flex-start; padding: 9px 6px; border-bottom: 1px solid #f0f2f4; }
+  .deal-row:last-child { border-bottom: 0; }
+  .deal-row:hover { background: #fafbfc; }
+  .deal-check { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+  .dr-body { flex: 1; min-width: 0; }
+  .dr-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .dr-org { font-weight: 700; font-size: 12.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dr-val { font-weight: 700; font-size: 12.5px; color: var(--ink); white-space: nowrap; flex-shrink: 0; }
+  .dr-bottom { display: flex; align-items: center; gap: 7px; margin-top: 4px; }
+  .dr-meta { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stage-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1.5px 7px; border-radius: 20px; white-space: nowrap; background: #eef0f2; color: var(--ink-soft); border: 1px solid var(--border); flex-shrink: 0; }
   .stage-tag.s-Underwriting { background: #fdf0ea; color: var(--accent-dark); border-color: #f3d3c4; }
   .stage-tag.s-Offer-Out { background: #fff6e6; color: #b7791f; border-color: #f0dcb0; }
   .stage-tag.s-Funded { background: var(--green-bg); color: var(--green); border-color: #bfe3cd; }
@@ -230,39 +235,43 @@
   .days-flag { font-weight: 700; }
   .days-flag.warn { color: #b7791f; }
   .days-flag.bad { color: var(--red); }
-  .row-act { color: var(--muted); cursor: pointer; padding: 4px; border-radius: 6px; border: 1px solid transparent; background: none; display: inline-grid; place-items: center; }
-  .row-act:hover { color: var(--accent-dark); background: var(--accent-soft); border-color: var(--border); }
-  .deals-empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 13px; }
-  .deal-check { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+  .deals-empty { text-align: center; color: var(--muted); padding: 36px 10px; font-size: 12.5px; }
 
-  /* ---- AI insight panel (right rail) ---- */
-  .insight-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .insight-panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
-  .run-ai { width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: background .12s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-  .run-ai:hover { background: var(--accent-dark); }
-  .run-ai:disabled { opacity: .6; cursor: default; }
-  .ai-placeholder { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 14px; text-align: center; padding: 18px 8px; }
-  .ai-headline { background: var(--charcoal); color: #fff; border-radius: 10px; padding: 13px 15px; font-size: 13.5px; font-weight: 600; line-height: 1.45; margin: 14px 0 12px; }
-  .ai-headline .spark { color: var(--accent); font-weight: 800; }
-  .finding { border: 1px solid var(--border); border-left-width: 3px; border-radius: 8px; padding: 11px 12px; margin-bottom: 10px; }
+  /* ---- AI insights: the hero (wide, left) ---- */
+  .insight-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px 20px; min-height: 340px; }
+  .insight-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 2px; }
+  .insight-head h3 { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--ink); margin: 0; }
+  .ai-mark { width: 17px; height: 17px; color: var(--accent); flex-shrink: 0; }
+  .rerun-ai { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer; transition: all .12s; }
+  .rerun-ai:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-soft); }
+  .rerun-ai svg { width: 13px; height: 13px; }
+  .rerun-ai:disabled { opacity: .5; cursor: default; }
+  .ai-placeholder { color: var(--muted); font-size: 13px; line-height: 1.5; padding: 48px 20px; text-align: center; }
+
+  .ai-headline { background: var(--charcoal); color: #fff; border-radius: 12px; padding: 16px 18px; font-size: 16.5px; font-weight: 600; line-height: 1.4; margin: 14px 0 16px; letter-spacing: -.1px; }
+  .ai-headline .spark { color: var(--accent); font-weight: 800; margin-right: 5px; }
+
+  .ai-findings { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .finding { border: 1px solid var(--border); border-left-width: 3px; border-radius: 8px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; }
   .finding.high { border-left-color: var(--red); }
   .finding.medium { border-left-color: #d98324; }
   .finding.low { border-left-color: var(--green); }
-  .finding .f-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
-  .finding .f-title { font-size: 13px; font-weight: 700; color: var(--ink); }
-  .finding .f-sev { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; padding: 2px 7px; border-radius: 10px; }
+  .finding .f-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .finding .f-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .finding .f-sev { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
   .finding.high .f-sev { background: var(--red-bg); color: var(--red); }
   .finding.medium .f-sev { background: #fff6e6; color: #b7791f; }
   .finding.low .f-sev { background: var(--green-bg); color: var(--green); }
-  .finding .f-detail { font-size: 12px; color: var(--ink-soft); line-height: 1.45; margin-bottom: 8px; }
-  .finding .f-action { font-size: 11.5px; color: var(--muted); margin-bottom: 9px; }
-  .finding .f-action b { color: var(--ink); font-weight: 600; }
-  .finding .f-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .finding .f-detail { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; margin-bottom: 9px; }
+  .finding .f-action { font-size: 12px; color: var(--ink); background: var(--accent-soft); border-radius: 6px; padding: 7px 9px; margin-bottom: 10px; line-height: 1.35; }
+  .finding .f-action b { color: var(--accent-dark); font-weight: 700; }
+  .finding .f-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
   .finding .f-deals { font-size: 10.5px; color: var(--muted); font-family: var(--mono); }
 
-  .rules-block { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .rules-block { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .rules-block h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
+  .rules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 2px 22px; }
   .rule-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f2f4; }
-  .rule-item:last-child { border-bottom: 0; }
   .rule-ico { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-dark); }
   .rule-ico svg { width: 14px; height: 14px; }
   .rule-body { font-size: 12px; line-height: 1.4; }
@@ -271,13 +280,13 @@
   .rule-body .r-flow .r-when { color: var(--muted); }
   .rule-body .r-flow .r-then { color: var(--accent-dark); font-weight: 600; }
 
-  .ai-loading { text-align: center; padding: 30px 12px; }
-  .ai-loading .dots { display: inline-flex; gap: 5px; margin-bottom: 12px; }
-  .ai-loading .dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: bob 1s ease-in-out infinite; }
+  .ai-loading { text-align: center; padding: 70px 12px; }
+  .ai-loading .dots { display: inline-flex; gap: 6px; margin-bottom: 14px; }
+  .ai-loading .dots span { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); animation: bob 1s ease-in-out infinite; }
   .ai-loading .dots span:nth-child(2) { animation-delay: .15s; }
   .ai-loading .dots span:nth-child(3) { animation-delay: .3s; }
   @keyframes bob { 0%, 100% { transform: translateY(0); opacity: .4; } 50% { transform: translateY(-6px); opacity: 1; } }
-  .ai-loading .al-text { font-size: 12.5px; color: var(--muted); }
+  .ai-loading .al-text { font-size: 13px; color: var(--muted); }
 
   /* Toast confirmation for actions */
   .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--charcoal); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(28,32,36,.28); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 100; display: flex; align-items: center; gap: 10px; max-width: 460px; }
@@ -414,26 +423,28 @@
     <div class="seg-row" id="segRow"></div>
 
     <div class="crm-cols">
+      <div class="insight-panel">
+        <div class="insight-head">
+          <h3><svg class="ai-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5L13 3z"/></svg>What the AI found</h3>
+          <button class="rerun-ai" id="runAiBtn" title="Re-run analysis">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+            Re-run
+          </button>
+        </div>
+        <div id="aiBody">
+          <div class="ai-placeholder">Ranks all <b id="aiDealCount">26</b> deals by dollar value, writes the next action for each, and lists the rules to automate it.</div>
+        </div>
+      </div>
+
       <div class="deal-panel">
         <div class="deal-panel-head">
           <div>
             <h3 id="dealPanelTitle">All deals</h3>
             <span class="hint" id="dealPanelHint">Every deal in the pipeline</span>
           </div>
-          <div class="bulk-actions" id="bulkActions"></div>
         </div>
+        <div class="bulk-actions" id="bulkActions"></div>
         <div id="dealTableWrap"></div>
-      </div>
-
-      <div class="insight-panel">
-        <h3>AI analyst</h3>
-        <button class="run-ai" id="runAiBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5L13 3z"/></svg>
-          Run AI analysis
-        </button>
-        <div id="aiBody">
-          <div class="ai-placeholder">AI reads all <b id="aiDealCount">26</b> deals, ranks the opportunities by dollar value, and writes the next action for each — plus the automation rules you could set so this runs itself.</div>
-        </div>
       </div>
     </div>
   </div>
@@ -739,6 +750,7 @@ async function loadPipeline(clientId){
     renderScorecards();
     renderSegments();
     renderDeals();
+    runAi(); // AI insights are the hero — surface them immediately, no click needed
   } catch(e){
     $("dealTableWrap").innerHTML = '<div class="deals-empty" style="color:#c0392b">Failed to load pipeline: '+esc(String(e))+'</div>';
   }
@@ -811,37 +823,35 @@ function renderDeals(){
   // Bulk action bar (only meaningful within a segment / when rows selected)
   renderBulkActions();
 
-  if (!deals.length){ $("dealTableWrap").innerHTML = '<div class="deals-empty">No deals in this segment. Nice — nothing slipping through.</div>'; return; }
+  if (!deals.length){ $("dealTableWrap").innerHTML = '<div class="deals-empty">No deals in this segment — nothing slipping through.</div>'; return; }
 
   const rows = deals.map(d => {
-    const lastTouch = dayFlag(d.daysSinceActivity, 7, 14);
-    const inStage = dayFlag(d.daysInStage, 14, 21);
     const stageCls = "s-" + d.stage.replace(/[^A-Za-z]+/g, "-");
-    const extra = d.stage === "Funded" && d.fundedDaysAgo
-      ? `${d.paidPct}% paid · funded ${d.fundedDaysAgo}d ago`
-      : `${d.product}`;
-    return `<tr>
-      <td><input type="checkbox" class="deal-check" data-id="${d.id}" ${selected.has(d.id)?'checked':''}></td>
-      <td>
-        <div class="deal-org">${esc(d.org)}</div>
-        <div class="deal-id">${d.id} · ${esc(d.industry)}</div>
-      </td>
-      <td><div class="deal-meta">${esc(extra)}</div></td>
-      <td class="deal-val">${d.value ? fmtFull(d.value) : "—"}</td>
-      <td><span class="stage-tag ${stageCls}">${esc(d.stage)}</span></td>
-      <td>${inStage}</td>
-      <td>${lastTouch}</td>
-      <td><div class="deal-meta">${esc(d.owner)}</div></td>
-    </tr>`;
+    // Surface the single most relevant signal per deal for the compact rail.
+    let signal;
+    if (d.stage === "Funded") {
+      signal = d.paidPct != null ? `funded ${d.fundedDaysAgo}d ago · ${d.paidPct}% paid` : `funded ${d.fundedDaysAgo}d ago`;
+    } else if (d.stage === "Declined") {
+      signal = `declined ${d.daysSinceActivity}d ago`;
+    } else {
+      signal = `${dayFlag(d.daysSinceActivity, 7, 14)} no touch · ${dayFlag(d.daysInStage, 14, 21)} in stage`;
+    }
+    return `<label class="deal-row">
+      <input type="checkbox" class="deal-check" data-id="${d.id}" ${selected.has(d.id)?'checked':''}>
+      <div class="dr-body">
+        <div class="dr-top">
+          <span class="dr-org">${esc(d.org)}</span>
+          <span class="dr-val">${d.value ? fmtMoney(d.value) : "—"}</span>
+        </div>
+        <div class="dr-bottom">
+          <span class="stage-tag ${stageCls}">${esc(d.stage)}</span>
+          <span class="dr-meta">${signal}</span>
+        </div>
+      </div>
+    </label>`;
   }).join("");
 
-  $("dealTableWrap").innerHTML = `
-    <table class="deals">
-      <thead><tr>
-        <th></th><th>Merchant</th><th>Detail</th><th>Amount</th><th>Stage</th><th>In stage</th><th>Last touch</th><th>Owner</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  $("dealTableWrap").innerHTML = rows;
   $("dealTableWrap").querySelectorAll(".deal-check").forEach(cb => cb.onchange = () => {
     if (cb.checked) selected.add(cb.dataset.id); else selected.delete(cb.dataset.id);
     renderBulkActions();
@@ -930,8 +940,9 @@ function renderInsights(ins){
       </div>
     </div>`;
   }).join("");
-  $("aiBody").innerHTML = headline + findings +
-    `<div class="rules-block"><h3>Rules you could automate</h3>${rules}</div>`;
+  $("aiBody").innerHTML = headline +
+    `<div class="ai-findings">${findings}</div>` +
+    `<div class="rules-block"><h3>Rules you could automate</h3><div class="rules-grid">${rules}</div></div>`;
   $("aiBody").querySelectorAll(".finding .act-btn").forEach(b => b.onclick = () => {
     const ids = (b.dataset.ids||"").split(",").filter(Boolean);
     fireAction(b.dataset.ch, ids);
