@@ -115,7 +115,7 @@ COVER: ${section.guidance}
 
 Other section headings in this article (do not repeat their content): ${ctx.allHeadings.join("; ")}
 
-Write 220-320 words of prose for THIS section only. Be concrete: name real CRM fields, workflows, and before/after outcomes. You may use one short bullet list if it helps. Use the exact keyword phrase "${ctx.keyword}" only if it fits naturally.
+Write 170-220 words of prose for THIS section only (hard limit: do not exceed 230 words). Be concrete: name real CRM fields, workflows, and before/after outcomes. You may use one short bullet list if it helps. Use the exact keyword phrase "${ctx.keyword}" only if it fits naturally.
 ${RULES}
 
 Voice reference snippets:
@@ -175,6 +175,9 @@ function assemble(plan: ArticlePlan, sectionBodies: string[], faqBlock: string):
 function directiveFor(id: string, detail: string, seo: SeoReport): string {
   switch (id) {
     case "word-count": {
+      if (seo.wordCount > 2600) {
+        return `TRIM the article to between 1,800 and 2,400 words (currently ${seo.wordCount}). Tighten wordy sentences and cut repetition. Keep every section, the FAQ, and the CTA. Do NOT add content.`;
+      }
       const need = Math.max(0, 1700 - seo.wordCount);
       return `Add about ${need} more words by deepening existing sections (keep every existing sentence; add concrete examples and CRM field names). Do not add new sections or filler. Currently ${seo.wordCount} words.`;
     }

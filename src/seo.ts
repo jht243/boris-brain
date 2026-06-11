@@ -168,8 +168,8 @@ export function scoreSeo(draft: string, keyword: string): SeoReport {
     },
     {
       id: "word-count",
-      label: "Length 1,500-2,200 words",
-      pass: wordCount >= 1500 && wordCount <= 2400,
+      label: "Length 1,500-2,600 words",
+      pass: wordCount >= 1500 && wordCount <= 2600,
       weight: 12,
       detail: `${wordCount} words`,
     },
