@@ -134,11 +134,6 @@
     <label for="keyword">Primary SEO keyword (optional)</label>
     <input type="text" id="keyword" placeholder="defaults to the topic" />
     <button class="btn" id="genBtn">Generate article</button>
-
-    <div class="drafts">
-      <h2 style="margin-top:20px">Recent drafts</h2>
-      <div id="draftList"></div>
-    </div>
   </div>
 
   <div class="panel">
@@ -236,32 +231,28 @@ async function loadPresets(){
   });
 }
 
-async function loadDrafts(){
-  const r = await fetch("/api/drafts"); const { drafts } = await r.json();
-  $("draftList").innerHTML = drafts.length ? drafts.map(d=>`
-    <div class="draft-item${d.sample?' sample':''}" data-p="${encodeURIComponent(d.path)}">
-      <span class="t">${esc(d.title)}${d.sample?'<span class="badge-sample">sample</span>':''}</span>
-      <span class="d">${new Date(d.mtime).toLocaleString()}</span>
-    </div>`).join("") : '<div class="seo-empty" style="padding:14px">No drafts yet.</div>';
-  $("draftList").querySelectorAll(".draft-item").forEach(it => it.onclick = () => openDraft(decodeURIComponent(it.dataset.p)));
-}
-
-async function openDraft(path){
-  const r = await fetch("/api/draft?path="+encodeURIComponent(path));
-  if (!r.ok) return;
-  const { content } = await r.json();
-  currentPath = path;
-  setContent(content);
-  const s = await (await fetch("/api/seo",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({content, keyword: currentKeyword})})).json();
-  renderSeo(s.seo);
-}
-
 function setContent(md){
   $("editor").value = md;
   $("render").innerHTML = renderMd(md);
   $("toolbar").style.display = "flex";
   const title = (md.match(/^#\s+(.+)/m)||[])[1] || "Article";
   $("articleTitle").textContent = title.slice(0,60);
+  previewMode();
+}
+
+function previewMode(){
+  editing = false;
+  $("editor").style.display = "none";
+  $("render").style.display = "block";
+  $("saveBtn").style.display = "none";
+  $("editToggle").style.display = "inline-block";
+}
+function enterEdit(){
+  editing = true;
+  $("editor").style.display = "block";
+  $("render").style.display = "none";
+  $("saveBtn").style.display = "inline-block";
+  $("editToggle").style.display = "none";
 }
 
 const JHDR = {'Content-Type':'application/json'};
@@ -318,7 +309,7 @@ async function generate(){
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Drafting…';
   startGen(DRAFT_MSGS, 1);
   $("seoBody").innerHTML = '<div class="seo-empty">Drafting…</div>';
-  const show = (d) => { stopGen(); setContent(d.draft); renderSeo(d.seo); loadDrafts(); };
+  const show = (d) => { stopGen(); setContent(d.draft); renderSeo(d.seo); };
   try{
     // Stage 1: draft + SEO score (fast, parallel) — its own request.
     const r = await fetch("/api/generate",{method:"POST",headers:JHDR,body:JSON.stringify({topic, keyword: keyword||undefined})});
@@ -357,28 +348,24 @@ $("genBtn").onclick = generate;
 $("topic").addEventListener("keydown", e => { if (e.key==="Enter") generate(); });
 $("keyword").addEventListener("keydown", e => { if (e.key==="Enter") generate(); });
 
-$("editToggle").onclick = () => {
-  editing = !editing;
-  $("editor").style.display = editing ? "block" : "none";
-  $("render").style.display = editing ? "none" : "block";
-  $("saveBtn").style.display = editing ? "inline-block" : "none";
-  $("editToggle").textContent = editing ? "Preview" : "Edit";
-  if (!editing) rescore();
-};
+$("editToggle").onclick = enterEdit;
 let editTimer;
 $("editor").addEventListener("input", () => { clearTimeout(editTimer); editTimer = setTimeout(rescore, 600); });
 
 $("copyBtn").onclick = () => { navigator.clipboard.writeText($("editor").value); $("copyBtn").textContent = "Copied!"; setTimeout(()=>$("copyBtn").textContent="Copy",1200); };
 
+// Save writes the edits, then closes the editor and returns to preview.
 $("saveBtn").onclick = async () => {
-  if (!currentPath) return;
-  await fetch("/api/draft/save",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({path: currentPath, content: $("editor").value})});
-  $("saveBtn").textContent = "Saved!"; setTimeout(()=>$("saveBtn").textContent="Save",1200);
-  loadDrafts();
+  if (currentPath){
+    try{
+      await fetch("/api/draft/save",{method:"POST",headers:JHDR,body:JSON.stringify({path: currentPath, content: $("editor").value})});
+    }catch(e){}
+  }
+  previewMode();
+  rescore();
 };
 
 loadPresets();
-loadDrafts();
 </script>
 </body>
 </html>
