@@ -247,7 +247,9 @@ export async function generateArticle(
   let best = { draft, seo };
   console.log(`Initial draft: ${seo.score}/100 (${seo.grade}), ${seo.wordCount} words`);
 
-  for (let attempt = 0; attempt < 2 && seo.score < 90; attempt++) {
+  // At most one revision pass: the assembled draft usually scores high, and a second full
+  // regeneration risks exceeding Render's ~180s request window.
+  for (let attempt = 0; attempt < 1 && seo.score < 90; attempt++) {
     draft = sanitizeHumanTone(await reviseForSeo(system, draft, seo));
     seo = scoreSeo(draft, keyword);
     console.log(

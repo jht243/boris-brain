@@ -29,6 +29,8 @@ export const CORPUS_LIMIT = 200;
 // Embeddings stay on OpenAI (used only to build/query the RAG index).
 export const EMBEDDING_MODEL = "text-embedding-3-small";
 
-// Article generation runs on Anthropic Claude. Sonnet 4.6 is much faster than Opus per call,
-// which keeps a full multi-call generation inside Render's request window, with near-Opus quality.
-export const GENERATION_MODEL = "claude-sonnet-4-6";
+// Article generation model. Provider is auto-detected in llm.ts:
+//   "gpt-4.1" / "gpt-4o"  -> OpenAI (fast, fits Render's ~180s request window)
+//   "claude-sonnet-4-6" / "claude-opus-4-8" -> Anthropic (higher quality, slower)
+// gpt-4.1 is the default: better than gpt-4o, fast enough to finish synchronously on Render.
+export const GENERATION_MODEL = "gpt-4.1";
