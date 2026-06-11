@@ -167,9 +167,10 @@ export function scoreSeo(draft: string, keyword: string): SeoReport {
       detail: firstChunk.includes(kw) ? "Found in intro" : "Not found early",
     },
     {
+      // Tuned to Axis's real article length (median ~1,200), not generic SEO maximalism.
       id: "word-count",
-      label: "Length 1,500-2,600 words",
-      pass: wordCount >= 1500 && wordCount <= 2600,
+      label: "Length 900-1,800 words (Axis range)",
+      pass: wordCount >= 900 && wordCount <= 1800,
       weight: 12,
       detail: `${wordCount} words`,
     },

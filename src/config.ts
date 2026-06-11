@@ -10,6 +10,7 @@ export const PATHS = {
   embeddings: path.join(root, "data/embeddings/index.json"),
   styleGuide: path.join(root, "prompts/axis-style.md"),
   systemPrompt: path.join(root, "prompts/system.md"),
+  founderVoice: path.join(root, "prompts/founder-voice.md"),
   outputDir: path.join(root, "output"),
 };
 

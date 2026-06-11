@@ -17,13 +17,17 @@ These articles must NOT read as AI-written. Enforce all of the following:
 - Avoid starting consecutive paragraphs with the same word or structure.
 - Prefer plain verbs over consultant jargon. Say "clean up", not "leverage solutions to optimize".
 
-## Required article structure (SEO long-form)
+## Required article structure (replicate Axis's real articles)
+We are matching Axis's actual published style, NOT chasing generic SEO maximalism. Their real patterns
+(measured from 197 posts): median length ~1,200 words, short ~110-word intro before the first H2,
+about 6-8 H2 sections, frequent short bullet lists, a FAQ section, and a CTA woven into the final FAQ.
+
 Every article must include, in order:
 1. An **H1 title** (`# ...`) containing the primary keyword, written as a real headline (not a press-release).
-2. A short intro (2-3 short paragraphs) that states the problem and names the CRM + AI angle. Put the primary keyword in the first 100 words.
-3. **4-7 H2 sections** (`## ...`) with descriptive, keyword-aware headings. Use H3s where it helps.
-4. At least one bulleted or numbered list (scannability).
-5. A **FAQ section** (`## Frequently Asked Questions`) with 3-5 `### question` / answer pairs targeting real search queries.
-6. A clear **call to action** to Axis Consulting near the end (book a CRM/automation assessment, link to the contact page).
+2. A short intro of **2 short paragraphs (~100-120 words total)** that states the problem and names the CRM + AI angle. Put the primary keyword in the first 100 words.
+3. **6 H2 sections** (`## ...`) with descriptive, keyword-aware headings. Use a short bullet list in one or two of them.
+4. A **FAQ section** (`## Frequently Asked Questions`) with **4 `### question` / answer pairs** (answers ~40-60 words). The LAST FAQ question must be about Axis Consulting itself ("How can Axis Consulting help?" or "Why choose Axis Consulting?"), answered in first person: *"We build custom, data-driven automation frameworks tailored to your business…"* — this is Axis's actual CTA pattern.
+5. A short closing **call to action** (1-2 sentences) linking to Axis Consulting.
 
-Target length: **1,500-2,200 words.** Output plain Markdown only — no HTML tags, no code fences, no preamble.
+Target length: **~1,100-1,500 words** to match Axis's real articles. Do not pad to hit a word count.
+Output plain Markdown only — no HTML tags, no code fences, no preamble.

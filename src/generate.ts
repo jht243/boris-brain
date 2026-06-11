@@ -7,6 +7,15 @@ import { scoreSeo, type SeoReport } from "./seo.js";
 
 const TEMP = 0.5;
 
+/** System prompt = base brand prompt + the founder's personal voice layer (if present). */
+function loadSystem(): string {
+  let system = fs.readFileSync(PATHS.systemPrompt, "utf8");
+  if (fs.existsSync(PATHS.founderVoice)) {
+    system += "\n\n---\n\n" + fs.readFileSync(PATHS.founderVoice, "utf8");
+  }
+  return system;
+}
+
 export interface GenerateOptions {
   /** Human topic, e.g. "AI for Pipedrive" or "Using AI to clean Salesforce data". */
   topic: string;
@@ -79,9 +88,10 @@ Return JSON only:
   "faqs": [ {"q": "a real search-query question ending in ?"} ]
 }
 
-Requirements:
-- 7 sections. At least one section h2 must contain the EXACT keyword phrase "${keyword}".
-- 5 FAQ questions.
+Requirements (match Axis's real article style):
+- 6 sections. At least one section h2 must contain the EXACT keyword phrase "${keyword}".
+- 4 FAQ questions. The LAST one must be about Axis Consulting itself ("How can Axis Consulting help?" or "Why choose Axis Consulting?").
+- Keep it tight: Axis articles run ~1,200 words, not long-form.
 - ${RULES}
 
 STYLE GUIDE:
@@ -115,7 +125,7 @@ COVER: ${section.guidance}
 
 Other section headings in this article (do not repeat their content): ${ctx.allHeadings.join("; ")}
 
-Write 170-220 words of prose for THIS section only (hard limit: do not exceed 230 words). Be concrete: name real CRM fields, workflows, and before/after outcomes. You may use one short bullet list if it helps. Use the exact keyword phrase "${ctx.keyword}" only if it fits naturally.
+Write 150-190 words of prose for THIS section only (hard limit: do not exceed 200 words). Axis keeps sections tight. Be concrete: name real CRM fields, workflows, and before/after outcomes. You may use one short bullet list if it helps. Use the exact keyword phrase "${ctx.keyword}" only if it fits naturally.
 ${RULES}
 
 Voice reference snippets:
@@ -143,16 +153,18 @@ ${faqs.map((f, i) => `${i + 1}. ${f.q}`).join("\n")}
 
 For each question output:
 ### <question>
-<a 40-80 word answer>
+<a 40-60 word answer>
 
+If a question is about Axis Consulting itself, answer in FIRST PERSON as Axis ("We build custom, data-driven automation systems tailored to your business / your funnel…"), short and confident. This is Axis's real CTA pattern.
 ${RULES}
 Output Markdown only, starting at the first ### question. No preamble, no "## FAQ" heading.`,
   });
   return out.trim();
 }
 
+// Matches Axis's real CTA voice ("custom, data-driven frameworks tailored to your business").
 function buildCta(): string {
-  return `If your CRM data is slowing your sales team down, ${BRAND.name} can help. We clean, enrich, and automate the data inside your CRM so your pipeline is something you can actually trust. [Book a CRM data assessment with Axis Consulting](${BRAND.ctaUrl}) and we will map the highest-impact fixes for your stack.`;
+  return `${BRAND.name} builds custom, data-driven automation systems tailored to your business, so your CRM data stays clean and nothing falls through the cracks. [Get in touch with Axis Consulting](${BRAND.ctaUrl}) to map the highest-impact fixes for your stack.`;
 }
 
 function assemble(plan: ArticlePlan, sectionBodies: string[], faqBlock: string): string {
@@ -175,10 +187,10 @@ function assemble(plan: ArticlePlan, sectionBodies: string[], faqBlock: string):
 function directiveFor(id: string, detail: string, seo: SeoReport): string {
   switch (id) {
     case "word-count": {
-      if (seo.wordCount > 2600) {
-        return `TRIM the article to between 1,800 and 2,400 words (currently ${seo.wordCount}). Tighten wordy sentences and cut repetition. Keep every section, the FAQ, and the CTA. Do NOT add content.`;
+      if (seo.wordCount > 1800) {
+        return `TRIM the article to about 1,200-1,500 words (currently ${seo.wordCount}). Tighten wordy sentences and cut repetition. Keep every section, the FAQ, and the CTA. Do NOT add content.`;
       }
-      const need = Math.max(0, 1700 - seo.wordCount);
+      const need = Math.max(0, 1100 - seo.wordCount);
       return `Add about ${need} more words by deepening existing sections (keep every existing sentence; add concrete examples and CRM field names). Do not add new sections or filler. Currently ${seo.wordCount} words.`;
     }
     case "density":
@@ -233,7 +245,7 @@ export async function draftArticle(
   const topic = options.topic.trim();
   const keyword = (options.keyword ?? topic).trim();
   const styleGuide = fs.readFileSync(PATHS.styleGuide, "utf8");
-  const system = fs.readFileSync(PATHS.systemPrompt, "utf8");
+  const system = loadSystem();
 
   // Retrieval uses OpenAI embeddings; writing uses the configured generation model.
   const query = `${topic} CRM data`;
@@ -272,7 +284,7 @@ export async function reviseArticle(options: {
   keyword: string;
   outputPath?: string;
 }): Promise<GenerateResult> {
-  const system = fs.readFileSync(PATHS.systemPrompt, "utf8");
+  const system = loadSystem();
   const baseSeo = scoreSeo(options.draft, options.keyword);
   if (baseSeo.score >= 90) return { draft: options.draft, seo: baseSeo };
 
