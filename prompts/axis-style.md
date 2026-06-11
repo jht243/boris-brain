@@ -2,55 +2,148 @@
 
 # Axis Consulting Blog Style Guide
 
-## 1. Voice & Tone
-- **Authoritative yet Approachable**: The writing should convey expertise in CRM and automation while remaining accessible to non-technical readers. Use straightforward language and avoid jargon unless it's explained.
-- **Conversational and Direct**: Engage readers with a conversational tone that feels like a dialogue. Use direct address ("you") to make the content feel personal and relevant.
-
-## 2. Typical Article Structure
-1. **Introduction**: Briefly introduce the topic and its relevance to the reader.
-2. **Table of Contents**: Provide a clear roadmap of the article's sections.
-3. **Key Concepts/Definitions**: Define any essential terms or concepts early on.
-4. **Main Content**: Break down the topic into digestible sections, often using case studies or real-world examples.
-5. **Analysis/Comparison**: Offer detailed insights or comparisons where applicable.
-6. **Conclusion/Final Thoughts**: Summarize the key takeaways and reinforce the article's main points.
-7. **FAQs**: Address common questions to clarify any remaining uncertainties.
-
-## 3. Explaining CRM/Automation Concepts
-- **Use Analogies**: Relate complex CRM and automation concepts to everyday experiences (e.g., comparing a sales funnel to a river guiding prospects).
-- **Step-by-Step Guides**: Break down processes into clear, actionable steps with subheadings for each step.
-- **Real-World Examples**: Use case studies or client stories to illustrate how concepts apply in practice.
-
-## 4. Recurring Frameworks, Analogies, and CTA Patterns
-- **Frameworks**: Use structured approaches like "Problem-Fix-Result" in case studies to show transformation.
-- **Analogies**: Compare CRM systems to familiar tools or processes to simplify understanding.
-- **CTAs**: Encourage readers to engage with Axis Consulting for personalized solutions, often using a "Speak with an Expert" prompt.
-
-## 5. Words and Phrases to USE
-- "Streamline"
-- "Optimize"
-- "Automate"
-- "Transform"
-- "Unlock potential"
-- "Tailored solutions"
-- "Real-time insights"
-- "Data-driven decisions"
-
-## 6. Words and Phrases to AVOID
-- "Seamless"
-- "Robust"
-- "Leverage"
-- "Delve"
-- "In conclusion"
-- "Cutting-edge"
-- "Next-gen"
-- "Revolutionary"
-
-## 7. CTA Template Pointing Readers to Axis Consulting
-"Looking for help but don’t know where to start? Choose Axis Consulting. We help companies streamline their processes with automation by unlocking the power of technology. Fill out the form below, and we will be in touch shortly."
+This guide distills the **distinctive, data-driven writing patterns** of Axis Consulting’s B2B SaaS/CRM-consulting blog content. It is designed for LLM-based content generation to produce articles that are **concrete, actionable, and human-like**—never generic or AI-obvious.
 
 ---
 
-This style guide ensures that Axis Consulting's blog content remains consistent, engaging, and informative, while effectively communicating the value of CRM and automation solutions to a non-technical audience.
+## 1. Voice & Tone
+
+- **Direct, Practical, and Uncluttered:** Sentences are short, active, and to the point. The writing avoids jargon and speaks directly to the reader (“you,” “your team,” “your business”).
+- **Sales-Process-Centric, Not Tech-First:** The focus is on how tools and automation impact real sales workflows, team productivity, and business outcomes—not on abstract technology benefits.
+
+---
+
+## 2. Typical Article Structure
+
+Axis Consulting articles follow a **predictable, modular structure**:
+
+1. **Brief, Problem-Oriented Introduction**
+   - States the business/sales challenge or decision (e.g., “Choosing the right CRM can be one of the most impactful decisions…”).
+   - Sets expectations for what the article will deliver.
+2. **Table of Contents**
+   - Always present, even for shorter posts.
+   - Mirrors the article’s section headers.
+3. **Key Takeaways or Summary Bullets** (for pricing/guides)
+   - Quick, scannable facts or pricing points.
+4. **Definitions & Context**
+   - “What is [Tool/Concept]?” or “Why does [X] matter?”
+   - Explains the tool/concept in business terms, not technical specs.
+5. **Plan/Feature/Benefit Breakdowns**
+   - Each plan/feature/benefit gets its own subheading and bullet list.
+   - Pricing, features, and use cases are always tied to business needs.
+6. **How-To or Setup Steps**
+   - Step-by-step, numbered or bulleted, with clear actions.
+7. **Comparisons, ROI, or Real-World Examples**
+   - “Which plan should you choose?” or “How does [X] compare?”
+   - Case studies, testimonials, or practical scenarios.
+8. **Best Practices, Mistakes to Avoid, or Advanced Tips**
+   - Actionable, not theoretical.
+9. **Conclusion/Final Verdict**
+   - Summarizes the main recommendation or next step.
+10. **FAQ Section**
+    - Direct, concise answers to common objections or questions.
+11. **CTA**
+    - Points to Axis Consulting for help, setup, or a free trial.
+
+---
+
+## 3. How CRM/Automation Concepts Are Explained to a Non-Technical Sales Audience
+
+- **Concrete, Workflow-Based Explanations:** 
+  - Always tie features to sales or customer service tasks (“automates follow-ups,” “assigns leads to the right rep,” “reduces manual data entry”).
+- **Use of Simple Analogies:** 
+  - “Like fishing with a blindfold on” for not tracking calls.
+  - “Think of your work as a chain of steps…” for process automation.
+- **Step-by-Step, Scenario-Driven:** 
+  - “Here’s what that looks like in practice: A rep moves a deal to ‘Discovery,’ and a pop-up displays the key questions to ask.”
+- **Avoids Technical Jargon:** 
+  - No talk of “APIs,” “SDKs,” or “cloud-native” unless absolutely necessary, and then always explained in business terms.
+- **Focus on Outcomes:** 
+  - “Helps your team close more deals,” “saves time and reduces errors,” “improves customer service.”
+
+---
+
+## 4. Recurring Frameworks, Analogies, and CTA Patterns
+
+### Frameworks & Analogies
+
+- **“From [X] to [Y]” Progressions:** 
+  - “From MQL to Closed-Won,” “From Reference to Revenue Driver.”
+- **“If/Then” Scenarios:** 
+  - “If your business depends on phone calls…”
+- **“What Most Companies Do vs. What Works” Contrasts:** 
+  - “Most automation setups look like… That’s marketing automation. But revenue automation is…”
+- **“Tool + Workflow = Outcome” Equations:** 
+  - “Playbook + CRM = Repeatable Revenue.”
+
+### CTA Patterns
+
+- **Direct, Action-Oriented:** 
+  - “Ready to streamline your entire sales process? Get started with [tool] through our official Axis Consulting.”
+  - “Let Axis Consulting help you choose the right solution for your business needs.”
+- **Offer Setup/Trial/Consultation:** 
+  - “Activate your free trial within minutes.”
+  - “Speak with an expert at Axis Consulting to get started.”
+
+---
+
+## 5. Words and Phrases to USE (from DATA-DRIVEN SIGNATURE TERMS)
+
+**Always prefer these terms and phrases when relevant:**
+
+- data, tools, need, sales, team, crm, business, work, help, real, process, customer, workflows, create, based, automation, management, improve, better, features, key, teams, businesses, integration, right, tasks, support, needs, helps, best, your business, real time, the right, your team, axis consulting, you need, help you, your sales, sales and, for businesses, your crm, tools like, the best, sales teams, and improve, and customer, follow ups, efficiency and, whether you, customer service, sales process, sales team, automation and, tasks and, business needs, for your business, for small businesses, your sales process, with your business, customer relationship management, with other tools, with tools like, your sales team, follow ups and, save time and, the need for, your business needs, manual data entry, choose the right, can help you, frequently asked questions, for sales teams, best practices for, close more deals, through the cracks
+
+---
+
+## 6. Words and Phrases to AVOID
+
+**Never use these (even if they sound SaaS-appropriate):**
+
+- streamline, optimize, unlock, transform, seamless, robust, leverage, delve, in conclusion, empower, cutting-edge, next-level, synergy, holistic, game-changer, revolutionize, frictionless, best-in-class, state-of-the-art, elevate, disrupt, paradigm, scalable, innovative, intuitive (unless quoting UI), unlock the power, maximize, solution-driven, digital transformation (unless in a comparison), “AI-powered” (unless describing a literal AI feature), “in today’s digital landscape,” “in today’s fast-paced world,” “in summary,” “to sum up,” “ultimately,” “at the end of the day,” “moving the needle,” “pain points,” “unprecedented,” “unparalleled,” “unmatched,” “empower your team,” “take your business to the next level,” “future-proof,” “supercharge,” “harness,” “revolutionary,” “cutting-edge,” “all-in-one,” “suite of tools,” “unleash,” “drive success,” “synergize,” “best-in-class,” “seamlessly integrate,” “robust integration,” “AI-driven,” “AI-powered” (unless describing a literal AI feature), “in conclusion,” “in summary,” “to sum up,” “ultimately,” “at the end of the day,” “moving the needle,” “pain points,” “unprecedented,” “unparalleled,” “unmatched,” “empower your team,” “take your business to the next level,” “future-proof,” “supercharge,” “harness,” “revolutionary,” “cutting-edge,” “all-in-one,” “suite of tools,” “unleash,” “drive success,” “synergize,” “best-in-class,” “seamlessly integrate,” “robust integration,” “AI-driven,” “AI-powered” (unless describing a literal AI feature).
+
+**Formatting/Stylistic:**
+- No em-dashes (—). Use commas or periods.
+- No emojis.
+- No “As an AI language model…” or similar AI tells.
+
+---
+
+## 7. CTA Template Pointing Readers to Axis Consulting
+
+> **Ready to improve your [sales process/CRM/workflows]? Speak with an expert at Axis Consulting. We help businesses choose, set up, and integrate the right tools for real results. [Contact us] to get started.**
+
+*(Adjust bracketed text to match the article topic. Always use “real results,” “the right tools,” and “speak with an expert” when possible.)*
+
+---
+
+**Use this guide to ensure every article reads as if written by a seasoned Axis Consulting expert: practical, sales-focused, and always grounded in real business needs.**
+
+---
+
+## Signature Vocabulary & Phrasing (data-driven, from 197 posts)
+
+These are terms and phrases genuinely over-represented in Axis's own writing. Prefer THESE; do NOT
+substitute generic SaaS words (streamline, optimize, unlock, transform, seamless, robust, leverage).
+
+**Signature single words (by how many posts use them):**
+data, tools, need, sales, team, crm, business, work, help, real, process, customer, workflows, create, based, automation, management, improve, better, features, key, teams, businesses, integration, right, tasks, support, needs, helps, best
+
+**Signature 2-word phrases:**
+your business, real time, the right, your team, axis consulting, you need, help you, your sales, sales and, for businesses, your crm, tools like, the best, sales teams, and improve, and customer, follow ups, efficiency and, whether you, customer service, sales process, sales team, automation and, tasks and, business needs
+
+**Signature 3-word phrases:**
+for your business, for small businesses, your sales process, with your business, customer relationship management, with other tools, with tools like, your sales team, follow ups and, save time and, the need for, your business needs, manual data entry, choose the right, can help you, frequently asked questions, for sales teams, best practices for, close more deals, through the cracks
+
+**How Axis tends to start sentences:**
+"for example…", "axis consulting…", "step …", "this helps…", "benefits of…", "key features…", "pipedrive is…", "it helps…", "set up…", "whether youre…", "pipedrive crm…", "setting up…", "this integration…", "this ensures…", "aircall is…"
+
+**Formatting habits (match these):**
+- Avg article length: **1032 words**
+- Uses bullet lists in **81%** of posts
+- Avg H2 sections per post: **7.8**
+- Question headlines: **12%** · numbered/listicle headlines: **16%**
+- Contraction rate: **1.2 per 100 words** (conversational, uses "you're / it's / don't")
+
 
 ---
 
