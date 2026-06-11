@@ -72,6 +72,29 @@
   .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -2px; margin-right: 7px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Generating state: breathing brain with firing synapses + rotating status */
+  .generating { padding: 54px 20px 40px; text-align: center; }
+  .generating .brain-large { width: 88px; height: 88px; margin: 0 auto 22px; display: block; animation: brain-breathe 1.8s ease-in-out infinite; transform-origin: center; }
+  .generating .brain-outline { fill: none; stroke: var(--charcoal); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+  .generating .brain-fold { fill: none; stroke: var(--accent-dark); stroke-width: 1; stroke-linecap: round; opacity: .5; }
+  .generating .synapse { fill: var(--accent); animation: synapse-fire .9s ease-in-out infinite; }
+  .generating .synapse:nth-of-type(1) { animation-delay: 0s; }
+  .generating .synapse:nth-of-type(2) { animation-delay: .22s; }
+  .generating .synapse:nth-of-type(3) { animation-delay: .45s; }
+  .generating .synapse:nth-of-type(4) { animation-delay: .67s; }
+  @keyframes brain-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+  @keyframes synapse-fire {
+    0%, 100% { opacity: .2; r: 1.2; }
+    50% { opacity: 1; r: 2.5; filter: drop-shadow(0 0 6px var(--accent)); }
+  }
+  .generating .status-line { font-size: 16px; color: var(--ink); font-weight: 600; min-height: 24px; transition: opacity .35s ease; letter-spacing: .2px; }
+  .generating .status-line.fading { opacity: 0; }
+  .generating .status-sub { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .7px; margin-top: 13px; }
+  .generating .stage-pills { display: flex; gap: 7px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .generating .stage-pill { font-size: 11px; font-weight: 600; color: var(--muted); background: #eef0f2; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; transition: all .2s; }
+  .generating .stage-pill.active { color: var(--accent-dark); border-color: var(--accent); background: var(--accent-soft); }
+  .generating .stage-pill.done { color: var(--green); border-color: #bfe3cd; background: var(--green-bg); }
+
   .score-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
   .gauge { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 22px; color: #fff; flex-shrink: 0; }
   .score-meta { font-size: 12.5px; color: var(--muted); }
@@ -243,6 +266,49 @@ function setContent(md){
 
 const JHDR = {'Content-Type':'application/json'};
 
+const BRAIN_SVG = `<svg class="brain-large" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path class="brain-outline" d="M15 5 C 11 5, 8 7, 7 10 C 5 11, 4 13, 5 15 C 4 17, 5 19, 7 20 C 7 23, 9 25, 12 25 C 13 27, 15 27, 15 25 Z"/>
+  <path class="brain-outline" d="M17 5 C 21 5, 24 7, 25 10 C 27 11, 28 13, 27 15 C 28 17, 27 19, 25 20 C 25 23, 23 25, 20 25 C 19 27, 17 27, 17 25 Z"/>
+  <line class="brain-fold" x1="16" y1="5" x2="16" y2="25"/>
+  <circle class="synapse" cx="10" cy="11" r="1.4"/><circle class="synapse" cx="22" cy="12" r="1.4"/>
+  <circle class="synapse" cx="11" cy="18" r="1.4"/><circle class="synapse" cx="21" cy="19" r="1.4"/>
+  <path class="brain-fold" d="M9 12 Q 11 13 13 12"/><path class="brain-fold" d="M9 17 Q 11 18 13 17"/>
+  <path class="brain-fold" d="M19 12 Q 21 13 23 12"/><path class="brain-fold" d="M19 17 Q 21 18 23 17"/>
+</svg>`;
+const DRAFT_MSGS = [
+  "Tuning in to Axis Consulting's voice…",
+  "Pulling the most relevant past articles…",
+  "Outlining a search-friendly structure…",
+  "Writing each section with real CRM detail…",
+  "Drafting the FAQ and call to action…",
+  "Scoring SEO and scanning for AI tells…",
+];
+const POLISH_MSGS = [
+  "Tightening the SEO…",
+  "Trimming for the right length…",
+  "Stripping any AI tells…",
+  "Locking in the final draft…",
+];
+let genTimer = null;
+function startGen(msgs, stage){
+  $("render").innerHTML = `<div class="generating">${BRAIN_SVG}
+    <div class="status-line" id="genStatus">${esc(msgs[0])}</div>
+    <div class="status-sub">~20-60 seconds</div>
+    <div class="stage-pills">
+      <span class="stage-pill ${stage===1?'active':stage>1?'done':''}">1 · Draft</span>
+      <span class="stage-pill ${stage===2?'active':''}">2 · SEO polish</span>
+    </div></div>`;
+  let i = 0;
+  clearInterval(genTimer);
+  genTimer = setInterval(() => {
+    const e = document.getElementById('genStatus');
+    if (!e) return;
+    e.classList.add('fading');
+    setTimeout(() => { i = (i + 1) % msgs.length; e.textContent = msgs[i]; e.classList.remove('fading'); }, 350);
+  }, 2600);
+}
+function stopGen(){ if (genTimer){ clearInterval(genTimer); genTimer = null; } }
+
 async function generate(){
   const topic = $("topic").value.trim();
   const keyword = $("keyword").value.trim();
@@ -250,28 +316,30 @@ async function generate(){
   currentKeyword = keyword || topic;
   const btn = $("genBtn");
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Drafting…';
-  $("render").innerHTML = '<div class="empty"><span class="spinner" style="border-top-color:#e0592a;border-color:#f0d4c8"></span><br/>Drafting the article and scoring SEO. This takes ~30-60s.</div>';
+  startGen(DRAFT_MSGS, 1);
   $("seoBody").innerHTML = '<div class="seo-empty">Drafting…</div>';
+  const show = (d) => { stopGen(); setContent(d.draft); renderSeo(d.seo); loadDrafts(); };
   try{
     // Stage 1: draft + SEO score (fast, parallel) — its own request.
     const r = await fetch("/api/generate",{method:"POST",headers:JHDR,body:JSON.stringify({topic, keyword: keyword||undefined})});
     const data = await r.json();
     if (!r.ok) throw new Error(data.error||"failed");
     currentPath = data.outputPath;
-    setContent(data.draft);
-    renderSeo(data.seo);
-    loadDrafts();
 
-    // Stage 2: if SEO < 90, run one revision pass as a SEPARATE request (keeps each under the limit).
+    // Stage 2: if SEO < 90, run one revision pass as a SEPARATE request — keep the brain animating.
     if (data.seo && data.seo.score < 90){
       btn.innerHTML = '<span class="spinner"></span>Polishing SEO…';
+      startGen(POLISH_MSGS, 2);
       try{
         const r2 = await fetch("/api/revise",{method:"POST",headers:JHDR,body:JSON.stringify({draft: data.draft, keyword: currentKeyword, outputPath: data.outputPath})});
         const d2 = await r2.json();
-        if (r2.ok && d2.draft){ setContent(d2.draft); renderSeo(d2.seo); loadDrafts(); }
-      } catch(e2){ /* keep the stage-1 draft if the polish request fails */ }
+        show(r2.ok && d2.draft ? d2 : data);
+      } catch(e2){ show(data); /* keep the stage-1 draft if polish fails */ }
+    } else {
+      show(data);
     }
   } catch(e){
+    stopGen();
     $("render").innerHTML = '<div class="empty" style="color:#c0392b">Error: '+esc(String(e.message||e))+'</div>';
   } finally {
     btn.disabled = false; btn.textContent = "Generate article";
