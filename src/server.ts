@@ -3,7 +3,7 @@ import path from "node:path";
 import express from "express";
 import OpenAI from "openai";
 import { PATHS } from "./config.js";
-import { generateArticle } from "./generate.js";
+import { draftArticle, reviseArticle } from "./generate.js";
 import { scoreSeo } from "./seo.js";
 
 // Preset topic grid for the dashboard. Each becomes a one-click "generate" button.
@@ -37,7 +37,8 @@ export function createServer(client: OpenAI) {
     res.json({ topics: PRESET_TOPICS });
   });
 
-  // Generate an SEO article from a topic. Body: { topic, keyword? }
+  // STAGE 1 — draft + score (no revision). Body: { topic, keyword? }
+  // Kept fast/parallel so it finishes inside Render's request window.
   app.post("/api/generate", async (req, res) => {
     const { topic, keyword } = req.body as { topic?: string; keyword?: string };
     if (!topic || typeof topic !== "string" || topic.trim().length < 3) {
@@ -46,12 +47,47 @@ export function createServer(client: OpenAI) {
     }
     const outPath = path.join(PATHS.outputDir, `${Date.now()}-${slugify(keyword || topic)}.md`);
     try {
-      const { draft, seo } = await generateArticle(client, {
+      const { draft, seo } = await draftArticle(client, {
         topic: topic.trim(),
         keyword: keyword?.trim() || undefined,
         outputPath: outPath,
       });
       res.json({ draft, seo, outputPath: path.relative(PATHS.root, outPath) });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // STAGE 2 — one SEO revision pass on an existing draft. Body: { draft, keyword, outputPath? }
+  // Separate request so the revision rewrite never stacks onto stage 1's time budget.
+  app.post("/api/revise", async (req, res) => {
+    const { draft, keyword, outputPath } = req.body as {
+      draft?: string;
+      keyword?: string;
+      outputPath?: string;
+    };
+    if (typeof draft !== "string" || draft.length < 50) {
+      res.status(400).json({ error: "draft required" });
+      return;
+    }
+    // Only overwrite a path inside output/ (the draft we just generated).
+    let outPath: string | undefined;
+    if (outputPath && typeof outputPath === "string" && !outputPath.includes("..")) {
+      const full = path.resolve(PATHS.root, outputPath);
+      if (full.startsWith(PATHS.outputDir) && full.endsWith(".md")) outPath = full;
+    }
+    try {
+      const result = await reviseArticle({
+        draft,
+        keyword: (keyword || "").trim(),
+        outputPath: outPath,
+      });
+      res.json({
+        draft: result.draft,
+        seo: result.seo,
+        outputPath: outPath ? path.relative(PATHS.root, outPath) : outputPath,
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: String(err) });

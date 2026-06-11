@@ -212,7 +212,18 @@ Output the full corrected Markdown article only. No preamble, no code fences.`,
   });
 }
 
-export async function generateArticle(
+function writeDraftFile(outputPath: string | undefined, draft: string): void {
+  if (!outputPath) return;
+  fs.mkdirSync(PATHS.outputDir, { recursive: true });
+  fs.writeFileSync(outputPath, draft, "utf8");
+}
+
+/**
+ * STAGE 1: build and score the article WITHOUT the revision pass.
+ * This is the bulk of the work but the section/FAQ calls run in parallel, so it stays well
+ * under Render's ~180s request window. The revision pass is a separate request (reviseArticle).
+ */
+export async function draftArticle(
   openai: OpenAI,
   options: GenerateOptions,
 ): Promise<GenerateResult> {
@@ -221,7 +232,7 @@ export async function generateArticle(
   const styleGuide = fs.readFileSync(PATHS.styleGuide, "utf8");
   const system = fs.readFileSync(PATHS.systemPrompt, "utf8");
 
-  // Retrieval uses OpenAI embeddings; writing uses Claude.
+  // Retrieval uses OpenAI embeddings; writing uses the configured generation model.
   const query = `${topic} CRM data`;
   const [fullPosts, chunks] = await Promise.all([
     retrieveFullPosts(openai, query, 2),
@@ -242,26 +253,48 @@ export async function generateArticle(
     writeFaqs(system, plan.title, keyword, plan.faqs),
   ]);
 
-  let draft = sanitizeHumanTone(assemble(plan, sectionBodies, faqBlock));
-  let seo = scoreSeo(draft, keyword);
-  let best = { draft, seo };
-  console.log(`Initial draft: ${seo.score}/100 (${seo.grade}), ${seo.wordCount} words`);
+  const draft = sanitizeHumanTone(assemble(plan, sectionBodies, faqBlock));
+  const seo = scoreSeo(draft, keyword);
+  console.log(`Draft: ${seo.score}/100 (${seo.grade}), ${seo.wordCount} words`);
+  writeDraftFile(options.outputPath, draft);
+  return { draft, seo };
+}
 
-  // At most one revision pass: the assembled draft usually scores high, and a second full
-  // regeneration risks exceeding Render's ~180s request window.
-  for (let attempt = 0; attempt < 1 && seo.score < 90; attempt++) {
-    draft = sanitizeHumanTone(await reviseForSeo(system, draft, seo));
-    seo = scoreSeo(draft, keyword);
-    console.log(
-      `SEO pass ${attempt}: ${seo.score}/100 (${seo.grade}), ${seo.wordCount} words, aiTells=${seo.aiTells.length}`,
-    );
-    if (seo.score >= best.seo.score) best = { draft, seo };
-  }
-  console.log(`Final SEO score: ${best.seo.score}/100 (${best.seo.grade})`);
+/**
+ * STAGE 2: a single SEO revision pass on an existing draft. One model call, so it is fast and
+ * stays under the request window. Returns the better of (revised, original) by score.
+ */
+export async function reviseArticle(options: {
+  draft: string;
+  keyword: string;
+  outputPath?: string;
+}): Promise<GenerateResult> {
+  const system = fs.readFileSync(PATHS.systemPrompt, "utf8");
+  const baseSeo = scoreSeo(options.draft, options.keyword);
+  if (baseSeo.score >= 90) return { draft: options.draft, seo: baseSeo };
 
-  if (options.outputPath) {
-    fs.mkdirSync(PATHS.outputDir, { recursive: true });
-    fs.writeFileSync(options.outputPath, best.draft, "utf8");
+  const revised = sanitizeHumanTone(await reviseForSeo(system, options.draft, baseSeo));
+  const revisedSeo = scoreSeo(revised, options.keyword);
+  const best =
+    revisedSeo.score >= baseSeo.score
+      ? { draft: revised, seo: revisedSeo }
+      : { draft: options.draft, seo: baseSeo };
+  console.log(`Revised: ${best.seo.score}/100 (${best.seo.grade}), ${best.seo.wordCount} words`);
+  writeDraftFile(options.outputPath, best.draft);
+  return best;
+}
+
+/** Full pipeline (draft + one revision) in a single call. Used by the CLI / local runs. */
+export async function generateArticle(
+  openai: OpenAI,
+  options: GenerateOptions,
+): Promise<GenerateResult> {
+  const keyword = (options.keyword ?? options.topic).trim();
+  const draft = await draftArticle(openai, { ...options, outputPath: undefined });
+  let best = draft;
+  if (draft.seo.score < 90) {
+    best = await reviseArticle({ draft: draft.draft, keyword, outputPath: undefined });
   }
+  writeDraftFile(options.outputPath, best.draft);
   return best;
 }
