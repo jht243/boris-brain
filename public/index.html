@@ -830,7 +830,7 @@ function renderDeals(){
     // Surface the single most relevant signal per deal for the compact rail.
     let signal;
     if (d.stage === "Funded") {
-      signal = d.paidPct != null ? `funded ${d.fundedDaysAgo}d ago · ${d.paidPct}% paid` : `funded ${d.fundedDaysAgo}d ago`;
+      signal = `funded ${d.fundedDaysAgo}d ago`;
     } else if (d.stage === "Declined") {
       signal = `declined ${d.daysSinceActivity}d ago`;
     } else {

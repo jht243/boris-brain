@@ -52,13 +52,12 @@ export interface Deal {
   /** Total age of the deal in days. */
   ageDays: number;
   // --- Won-deal-only fields (used for renewal / cross-sell detection) ---
-  /** For Funded deals: how long ago it funded. */
+  // All derivable from native CRM data: won/close date and the org's product
+  // history. No servicing/repayment data (paid-down %, factor rate) is used —
+  // that lives in the funding platform, not the CRM.
+  /** For Funded deals: how long ago it funded (from the deal's won/close date). */
   fundedDaysAgo?: number;
-  /** For Funded deals: % of the balance the merchant has paid down. */
-  paidPct?: number;
-  /** For Funded deals: original factor rate. */
-  factorRate?: number;
-  /** Whether the merchant already has a second product on the books. */
+  /** Whether the merchant already has a second product on the books (other won deals / products). */
   hasCrossSell?: boolean;
 }
 
@@ -96,14 +95,14 @@ const SUMMIT_DEALS: Deal[] = [
   { id: "D-1163", org: "Maple & Oak Furniture", contact: "Heidi Brandt", industry: "Retail", product: "MCA / Cash Advance", value: 52000, stage: "New Lead", owner: "Dana Cho", source: "ISO partner", daysSinceActivity: 10, daysInStage: 10, ageDays: 10 },
 
   // --- Funded deals (won). Renewal / cross-sell candidates by design ---
-  { id: "D-0921", org: "Riverside Diner Group", contact: "Pete Salerno", industry: "Restaurants", product: "MCA / Cash Advance", value: 55000, stage: "Funded", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 96, daysInStage: 96, ageDays: 150, fundedDaysAgo: 96, paidPct: 68, factorRate: 1.32, hasCrossSell: false },
-  { id: "D-0935", org: "Apex Collision Center", contact: "Wes Tanner", industry: "Auto Repair", product: "MCA / Cash Advance", value: 78000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 118, daysInStage: 118, ageDays: 175, fundedDaysAgo: 118, paidPct: 81, factorRate: 1.28, hasCrossSell: false },
-  { id: "D-0948", org: "Golden Crust Bakery", contact: "Marie Dubois", industry: "Restaurants", product: "MCA / Cash Advance", value: 42000, stage: "Funded", owner: "Rey Ortiz", source: "Inbound web", daysSinceActivity: 102, daysInStage: 102, ageDays: 160, fundedDaysAgo: 102, paidPct: 74, factorRate: 1.35, hasCrossSell: true },
-  { id: "D-0959", org: "TrueNorth HVAC", contact: "Glen Park", industry: "Home Services", product: "Equipment Financing", value: 130000, stage: "Funded", owner: "Priya Nair", source: "ISO partner", daysSinceActivity: 134, daysInStage: 134, ageDays: 190, fundedDaysAgo: 134, paidPct: 88, factorRate: 1.30, hasCrossSell: false },
-  // Funded but too recent / barely paid down — should NOT be flagged for renewal.
-  { id: "D-1015", org: "Sunset Car Wash", contact: "Ivan Petrov", industry: "Auto Services", product: "MCA / Cash Advance", value: 38000, stage: "Funded", owner: "Marcus Bell", source: "Cold outreach", daysSinceActivity: 34, daysInStage: 34, ageDays: 60, fundedDaysAgo: 34, paidPct: 22, factorRate: 1.40, hasCrossSell: false },
+  { id: "D-0921", org: "Riverside Diner Group", contact: "Pete Salerno", industry: "Restaurants", product: "MCA / Cash Advance", value: 55000, stage: "Funded", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 96, daysInStage: 96, ageDays: 150, fundedDaysAgo: 96, hasCrossSell: false },
+  { id: "D-0935", org: "Apex Collision Center", contact: "Wes Tanner", industry: "Auto Repair", product: "MCA / Cash Advance", value: 78000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 118, daysInStage: 118, ageDays: 175, fundedDaysAgo: 118, hasCrossSell: false },
+  { id: "D-0948", org: "Golden Crust Bakery", contact: "Marie Dubois", industry: "Restaurants", product: "MCA / Cash Advance", value: 42000, stage: "Funded", owner: "Rey Ortiz", source: "Inbound web", daysSinceActivity: 102, daysInStage: 102, ageDays: 160, fundedDaysAgo: 102, hasCrossSell: true },
+  { id: "D-0959", org: "TrueNorth HVAC", contact: "Glen Park", industry: "Home Services", product: "Equipment Financing", value: 130000, stage: "Funded", owner: "Priya Nair", source: "ISO partner", daysSinceActivity: 134, daysInStage: 134, ageDays: 190, fundedDaysAgo: 134, hasCrossSell: false },
+  // Funded too recently — should NOT be flagged for renewal (inside the term).
+  { id: "D-1015", org: "Sunset Car Wash", contact: "Ivan Petrov", industry: "Auto Services", product: "MCA / Cash Advance", value: 38000, stage: "Funded", owner: "Marcus Bell", source: "Cold outreach", daysSinceActivity: 34, daysInStage: 34, ageDays: 60, fundedDaysAgo: 34, hasCrossSell: false },
   // Funded, no second product attached — cross-sell candidate.
-  { id: "D-0972", org: "Empire Wholesale Foods", contact: "Nadia Khan", industry: "Wholesale / Distribution", product: "MCA / Cash Advance", value: 90000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 47, daysInStage: 47, ageDays: 95, fundedDaysAgo: 47, paidPct: 41, factorRate: 1.33, hasCrossSell: false },
+  { id: "D-0972", org: "Empire Wholesale Foods", contact: "Nadia Khan", industry: "Wholesale / Distribution", product: "MCA / Cash Advance", value: 90000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 47, daysInStage: 47, ageDays: 95, fundedDaysAgo: 47, hasCrossSell: false },
 
   // --- Declined / lost (re-engage candidates) ---
   { id: "D-0810", org: "Bayou Seafood Co.", contact: "Curtis Bell", industry: "Restaurants", product: "MCA / Cash Advance", value: 50000, stage: "Declined", owner: "Rey Ortiz", source: "Inbound web", daysSinceActivity: 74, daysInStage: 74, ageDays: 110 },
@@ -131,13 +130,13 @@ const KEYSTONE_DEALS: Deal[] = [
   { id: "K-2056", org: "Sprint Auto Parts", contact: "Del Pryor", industry: "Auto Parts", product: "MCA / Cash Advance", value: 50000, stage: "Application Out", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 4, daysInStage: 5, ageDays: 12 },
   { id: "K-2060", org: "Nova Pet Supplies", contact: "Beth Cole", industry: "E-commerce", product: "Merchant Processing", value: 22000, stage: "New Lead", owner: "Rey Ortiz", source: "Inbound web", daysSinceActivity: 2, daysInStage: 2, ageDays: 2 },
 
-  { id: "K-1905", org: "Maple Street Bakery", contact: "Owen Daly", industry: "Restaurants", product: "MCA / Cash Advance", value: 48000, stage: "Funded", owner: "Marcus Bell", source: "Inbound web", daysSinceActivity: 104, daysInStage: 104, ageDays: 160, fundedDaysAgo: 104, paidPct: 71, factorRate: 1.31, hasCrossSell: true },
-  { id: "K-1912", org: "Cedar Auto Body", contact: "Gus Marin", industry: "Auto Repair", product: "MCA / Cash Advance", value: 66000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 122, daysInStage: 122, ageDays: 175, fundedDaysAgo: 122, paidPct: 79, factorRate: 1.29, hasCrossSell: true },
+  { id: "K-1905", org: "Maple Street Bakery", contact: "Owen Daly", industry: "Restaurants", product: "MCA / Cash Advance", value: 48000, stage: "Funded", owner: "Marcus Bell", source: "Inbound web", daysSinceActivity: 104, daysInStage: 104, ageDays: 160, fundedDaysAgo: 104, hasCrossSell: true },
+  { id: "K-1912", org: "Cedar Auto Body", contact: "Gus Marin", industry: "Auto Repair", product: "MCA / Cash Advance", value: 66000, stage: "Funded", owner: "Dana Cho", source: "Referral", daysSinceActivity: 122, daysInStage: 122, ageDays: 175, fundedDaysAgo: 122, hasCrossSell: true },
   // Cross-sell: processing merchants with no advance on the books.
   { id: "K-1920", org: "Riverside Florist", contact: "Lana Beck", industry: "Retail", product: "Merchant Processing", value: 30000, stage: "Funded", owner: "Priya Nair", source: "ISO partner", daysSinceActivity: 47, daysInStage: 47, ageDays: 110, fundedDaysAgo: 60, hasCrossSell: false },
   { id: "K-1925", org: "Summit Hardware", contact: "Roy Stein", industry: "Retail", product: "Merchant Processing", value: 44000, stage: "Funded", owner: "Rey Ortiz", source: "Referral", daysSinceActivity: 52, daysInStage: 52, ageDays: 120, fundedDaysAgo: 75, hasCrossSell: false },
   // Funded too recent (not renewal).
-  { id: "K-1960", org: "Bayview Grill", contact: "Tess Olin", industry: "Restaurants", product: "MCA / Cash Advance", value: 40000, stage: "Funded", owner: "Marcus Bell", source: "Inbound web", daysSinceActivity: 30, daysInStage: 30, ageDays: 55, fundedDaysAgo: 30, paidPct: 19, factorRate: 1.34, hasCrossSell: true },
+  { id: "K-1960", org: "Bayview Grill", contact: "Tess Olin", industry: "Restaurants", product: "MCA / Cash Advance", value: 40000, stage: "Funded", owner: "Marcus Bell", source: "Inbound web", daysSinceActivity: 30, daysInStage: 30, ageDays: 55, fundedDaysAgo: 30, hasCrossSell: true },
 
   { id: "K-1810", org: "Oak & Iron Furniture", contact: "Vic Reyes", industry: "Retail", product: "MCA / Cash Advance", value: 52000, stage: "Declined", owner: "Dana Cho", source: "Cold outreach", daysSinceActivity: 80, daysInStage: 80, ageDays: 110 },
   { id: "K-1822", org: "Citywide Cleaners", contact: "Ana Pope", industry: "Services", product: "Merchant Processing", value: 24000, stage: "Declined", owner: "Priya Nair", source: "ISO partner", daysSinceActivity: 95, daysInStage: 95, ageDays: 125 },
@@ -162,14 +161,14 @@ const APEX_DEALS: Deal[] = [
   { id: "A-3048", org: "Metro Imaging Center", contact: "Dr. Paul Reyes", industry: "Medical / Dental", product: "Equipment Financing", value: 120000, stage: "Qualified", owner: "Priya Nair", source: "Inbound web", daysSinceActivity: 2, daysInStage: 3, ageDays: 8 },
   { id: "A-3052", org: "Newleaf Nurseries", contact: "Gwen Hart", industry: "Agriculture", product: "MCA / Cash Advance", value: 42000, stage: "New Lead", owner: "Dana Cho", source: "Inbound web", daysSinceActivity: 6, daysInStage: 6, ageDays: 6 },
 
-  { id: "A-2905", org: "Titan Excavation", contact: "Brad Olsen", industry: "Construction", product: "Equipment Financing", value: 158000, stage: "Funded", owner: "Rey Ortiz", source: "Referral", daysSinceActivity: 128, daysInStage: 128, ageDays: 190, fundedDaysAgo: 128, paidPct: 84, hasCrossSell: true },
-  { id: "A-2912", org: "Redline Trucking Co.", contact: "Kim Vargas", industry: "Trucking", product: "Equipment Financing", value: 134000, stage: "Funded", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 110, daysInStage: 110, ageDays: 170, fundedDaysAgo: 110, paidPct: 73, hasCrossSell: false },
-  { id: "A-2918", org: "Pinewood Millworks", contact: "Eli Burke", industry: "Manufacturing", product: "Equipment Financing", value: 98000, stage: "Funded", owner: "Priya Nair", source: "Referral", daysSinceActivity: 99, daysInStage: 99, ageDays: 150, fundedDaysAgo: 99, paidPct: 66, hasCrossSell: true },
+  { id: "A-2905", org: "Titan Excavation", contact: "Brad Olsen", industry: "Construction", product: "Equipment Financing", value: 158000, stage: "Funded", owner: "Rey Ortiz", source: "Referral", daysSinceActivity: 128, daysInStage: 128, ageDays: 190, fundedDaysAgo: 128, hasCrossSell: true },
+  { id: "A-2912", org: "Redline Trucking Co.", contact: "Kim Vargas", industry: "Trucking", product: "Equipment Financing", value: 134000, stage: "Funded", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 110, daysInStage: 110, ageDays: 170, fundedDaysAgo: 110, hasCrossSell: false },
+  { id: "A-2918", org: "Pinewood Millworks", contact: "Eli Burke", industry: "Manufacturing", product: "Equipment Financing", value: 98000, stage: "Funded", owner: "Priya Nair", source: "Referral", daysSinceActivity: 99, daysInStage: 99, ageDays: 150, fundedDaysAgo: 99, hasCrossSell: true },
   // Cross-sell: funded equipment clients with no working-capital line.
   { id: "A-2925", org: "Harvest Gold Dairy", contact: "Tom Pell", industry: "Agriculture", product: "Equipment Financing", value: 115000, stage: "Funded", owner: "Dana Cho", source: "Inbound web", daysSinceActivity: 50, daysInStage: 50, ageDays: 100, fundedDaysAgo: 55, hasCrossSell: false },
   { id: "A-2930", org: "Bedrock Paving", contact: "Lou Marsh", industry: "Construction", product: "Equipment Financing", value: 76000, stage: "Funded", owner: "Marcus Bell", source: "ISO partner", daysSinceActivity: 44, daysInStage: 44, ageDays: 115, fundedDaysAgo: 68, hasCrossSell: false },
   // Funded too recent.
-  { id: "A-2960", org: "Skyline Crane Rental", contact: "Jed Pace", industry: "Construction", product: "Equipment Financing", value: 145000, stage: "Funded", owner: "Rey Ortiz", source: "Referral", daysSinceActivity: 28, daysInStage: 28, ageDays: 50, fundedDaysAgo: 28, paidPct: 14, hasCrossSell: true },
+  { id: "A-2960", org: "Skyline Crane Rental", contact: "Jed Pace", industry: "Construction", product: "Equipment Financing", value: 145000, stage: "Funded", owner: "Rey Ortiz", source: "Referral", daysSinceActivity: 28, daysInStage: 28, ageDays: 50, fundedDaysAgo: 28, hasCrossSell: true },
 
   { id: "A-2810", org: "Frontier Logistics", contact: "Rosa Kemp", industry: "Trucking", product: "Equipment Financing", value: 90000, stage: "Declined", owner: "Priya Nair", source: "ISO partner", daysSinceActivity: 85, daysInStage: 85, ageDays: 120 },
   { id: "A-2820", org: "Copperline Electrical", contact: "Walt Nash", industry: "Construction", product: "Business Line of Credit", value: 70000, stage: "Declined", owner: "Dana Cho", source: "Cold outreach", daysSinceActivity: 100, daysInStage: 100, ageDays: 130 },
@@ -194,8 +193,7 @@ export function getClient(id?: string): Client {
 export const RULES = {
   rottenDaysInStage: 14, // open deal stuck in one stage this long = rotting
   coldDaysNoTouch: 7, // open deal with no activity this long = going cold
-  renewalMinDaysFunded: 90, // funded at least this long ago
-  renewalMinPaidPct: 50, // and paid down at least this much = renewal-ready
+  renewalMinDaysFunded: 90, // funded at least this long ago = into the renewal window
   reEngageMinDaysDeclined: 60, // declined at least this long ago = safe to re-approach
   reEngageMaxDaysDeclined: 180, // but not so long it's stale
   highValue: 75000, // "big deal" threshold for prioritization
@@ -224,10 +222,7 @@ export function computeSegments(deals: Deal[]): Segment[] {
       d.daysInStage < RULES.rottenDaysInStage // keep distinct from "rotting"
   );
   const renewal = deals.filter(
-    (d) =>
-      d.stage === "Funded" &&
-      (d.fundedDaysAgo ?? 0) >= RULES.renewalMinDaysFunded &&
-      (d.paidPct ?? 0) >= RULES.renewalMinPaidPct
+    (d) => d.stage === "Funded" && (d.fundedDaysAgo ?? 0) >= RULES.renewalMinDaysFunded
   );
   const crossSell = deals.filter(
     (d) => d.stage === "Funded" && d.hasCrossSell === false && !renewal.includes(d)
@@ -255,7 +250,7 @@ export function computeSegments(deals: Deal[]): Segment[] {
   return [
     seg("rotting", "Rotting deals", `Stuck in one stage ${RULES.rottenDaysInStage}+ days`, rotting),
     seg("cold", "Going cold (untouched)", `No activity in ${RULES.coldDaysNoTouch}+ days`, cold),
-    seg("renewal", "Renewal-ready (upsell)", `Funded ${RULES.renewalMinDaysFunded}+ days ago, paid past ${RULES.renewalMinPaidPct}%`, renewal),
+    seg("renewal", "Renewal-ready (upsell)", `Funded ${RULES.renewalMinDaysFunded}+ days ago — into the renewal window`, renewal),
     seg("crosssell", "Cross-sell ready", "Funded merchants without a second product", crossSell),
     seg("reengage", "Re-speak / re-engage", `Declined ${RULES.reEngageMinDaysDeclined}–${RULES.reEngageMaxDaysDeclined} days ago`, reEngage),
   ];
@@ -336,6 +331,8 @@ The reader is a senior RevOps consultant who knows this business cold. Write for
 
 You are given a pipeline and pre-computed segments (rotting deals, deals going cold, renewal-ready funded merchants, cross-sell candidates, declined deals worth re-approaching). Surface the money and the next move.
 
+HARD CONSTRAINT — use ONLY the data provided, which is all standard CRM data: deal value, stage, owner, product, created/won/lost dates, days in stage, days since last activity, and counts. NEVER invent or cite repayment percentages, paid-down amounts, factor rates, payoff, outstanding balances, APRs, or any servicing/underwriting metric — that data does NOT live in the CRM and the expert reader will spot it instantly. Every figure you state must be traceable to the numbers given.
+
 Return ONLY a JSON object with this exact shape:
 {
   "headline": "one line: total dollars at risk plus dollars in opportunity, with deal counts. No explanation.",
@@ -374,7 +371,7 @@ export async function generateInsights(deals: Deal[]): Promise<CrmInsights> {
               d.value
             )} | stage:${d.stage} | ${d.daysInStage}d in stage | ${d.daysSinceActivity}d no touch` +
             (d.fundedDaysAgo
-              ? ` | funded ${d.fundedDaysAgo}d ago${d.paidPct != null ? `, ${d.paidPct}% paid` : ""}${d.hasCrossSell ? ", has 2nd product" : ", no 2nd product"}`
+              ? ` | funded ${d.fundedDaysAgo}d ago${d.hasCrossSell ? ", has 2nd product" : ", no 2nd product"}`
               : "")
         )
         .join("\n");
