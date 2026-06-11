@@ -890,7 +890,7 @@ function showToast(msg){
 // --- AI analysis ---
 const AI_STEPS = ["Reading all deals…", "Scoring by dollar value…", "Spotting renewal windows…", "Writing next actions…"];
 let aiStepTimer;
-async function runAi(){
+async function runAi(fresh){
   const btn = $("runAiBtn");
   btn.disabled = true;
   let i = 0;
@@ -898,7 +898,13 @@ async function runAi(){
   clearInterval(aiStepTimer);
   aiStepTimer = setInterval(() => { i = (i+1)%AI_STEPS.length; const e=$("alText"); if(e) e.textContent = AI_STEPS[i]; }, 1800);
   try {
-    const r = await fetch("/api/crm/insights", { method:"POST", headers:JHDR, body: JSON.stringify({ client: currentClient }) });
+    // Cached loads return in ~1ms; hold the "working" state ~650ms so it reads
+    // as a deliberate AI pass instead of a flicker. Live re-runs need no padding.
+    const minShow = fresh ? 0 : 650;
+    const [r] = await Promise.all([
+      fetch("/api/crm/insights", { method:"POST", headers:JHDR, body: JSON.stringify({ client: currentClient, fresh: !!fresh }) }),
+      new Promise(res => setTimeout(res, minShow)),
+    ]);
     const d = await r.json();
     clearInterval(aiStepTimer);
     if (!r.ok || !d.insights) throw new Error(d.error || "failed");
@@ -949,7 +955,7 @@ function renderInsights(ins){
   });
 }
 
-$("runAiBtn").onclick = runAi;
+$("runAiBtn").onclick = () => runAi(true); // Re-run forces a live regeneration
 </script>
 </body>
 </html>

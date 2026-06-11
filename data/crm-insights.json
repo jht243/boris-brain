@@ -1,0 +1,291 @@
+{
+  "summit": {
+    "headline": "$633,000 at risk across 8 deals, $584,000 in renewal/cross-sell/re-engagement opportunities across 9 deals.",
+    "findings": [
+      {
+        "title": "Renewal-ready funded merchants",
+        "severity": "high",
+        "detail": "4 deals, $305,000, all untouched since funding, 68–88% paid.",
+        "dealIds": [
+          "D-0921",
+          "D-0935",
+          "D-0948",
+          "D-0959"
+        ],
+        "recommendedAction": "Call for renewal upsell immediately",
+        "channel": "slack"
+      },
+      {
+        "title": "Rotting deals",
+        "severity": "high",
+        "detail": "3 deals, $287,000, stuck in stage 14–27 days, 12–21 days no touch.",
+        "dealIds": [
+          "D-1041",
+          "D-1067",
+          "D-1090"
+        ],
+        "recommendedAction": "Escalate to underwriting today",
+        "channel": "slack"
+      },
+      {
+        "title": "Going cold",
+        "severity": "high",
+        "detail": "5 deals, $346,000, 8–11 days no touch, all stages.",
+        "dealIds": [
+          "D-1102",
+          "D-1115",
+          "D-1123",
+          "D-1161",
+          "D-1163"
+        ],
+        "recommendedAction": "Assign outreach task for all owners",
+        "channel": "task"
+      },
+      {
+        "title": "Re-speak declined deals",
+        "severity": "medium",
+        "detail": "3 deals, $151,000, declined 74–140 days ago, all untouched.",
+        "dealIds": [
+          "D-0810",
+          "D-0824",
+          "D-0790"
+        ],
+        "recommendedAction": "Email to re-engage with new offers",
+        "channel": "email"
+      },
+      {
+        "title": "Cross-sell funded merchants",
+        "severity": "medium",
+        "detail": "2 deals, $128,000, 22–41% paid, no second product.",
+        "dealIds": [
+          "D-1015",
+          "D-0972"
+        ],
+        "recommendedAction": "Call for cross-sell pitch this week",
+        "channel": "slack"
+      }
+    ],
+    "rules": [
+      {
+        "name": "Escalate stuck deals",
+        "trigger": "Deal in stage >14 days",
+        "action": "Slack alert to owner and underwriting",
+        "channel": "slack"
+      },
+      {
+        "name": "Auto-task for cold deals",
+        "trigger": "No touch >7 days on open deal",
+        "action": "Create outreach follow-up task",
+        "channel": "task"
+      },
+      {
+        "name": "Renewal outreach for funded >90d",
+        "trigger": "Funded >90d, paid >50%, no 2nd product",
+        "action": "Slack renewal opportunity to account owner",
+        "channel": "slack"
+      },
+      {
+        "name": "Cross-sell funded, no 2nd product",
+        "trigger": "Funded <90d, no 2nd product",
+        "action": "Slack alert for cross-sell pitch",
+        "channel": "slack"
+      },
+      {
+        "name": "Re-engage declined 60–180d",
+        "trigger": "Declined 60–180 days ago, no touch",
+        "action": "Send re-speak email template",
+        "channel": "email"
+      }
+    ]
+  },
+  "keystone": {
+    "headline": "$264,000 at risk, $264,000 in immediate opportunity across 13 deals.",
+    "findings": [
+      {
+        "title": "Renewal-ready funded merchants",
+        "severity": "high",
+        "detail": "2 funded deals, $114,000 eligible for renewal, 0 recent touches.",
+        "dealIds": [
+          "K-1905",
+          "K-1912"
+        ],
+        "recommendedAction": "Call both merchants for renewal pitch",
+        "channel": "slack"
+      },
+      {
+        "title": "Rotting deals",
+        "severity": "high",
+        "detail": "3 deals, $133,000 stalled 14+ days in stage.",
+        "dealIds": [
+          "K-2010",
+          "K-2014",
+          "K-2021"
+        ],
+        "recommendedAction": "Escalate to sales manager for intervention",
+        "channel": "slack"
+      },
+      {
+        "title": "Deals going cold",
+        "severity": "high",
+        "detail": "4 deals, $122,000 with no activity in 7+ days.",
+        "dealIds": [
+          "K-2030",
+          "K-2035",
+          "K-2038",
+          "K-2042"
+        ],
+        "recommendedAction": "Assign outreach tasks to owners today",
+        "channel": "task"
+      },
+      {
+        "title": "Cross-sell funded merchants",
+        "severity": "medium",
+        "detail": "2 funded deals, $74,000, no second product, untouched 47+ days.",
+        "dealIds": [
+          "K-1920",
+          "K-1925"
+        ],
+        "recommendedAction": "Email offer for equipment or MCA upsell",
+        "channel": "email"
+      },
+      {
+        "title": "Re-engage declined deals",
+        "severity": "medium",
+        "detail": "2 declined deals, $76,000, untouched 80+ days.",
+        "dealIds": [
+          "K-1810",
+          "K-1822"
+        ],
+        "recommendedAction": "Call to re-qualify and revisit decision",
+        "channel": "slack"
+      }
+    ],
+    "rules": [
+      {
+        "name": "Flag renewal-ready funded merchants",
+        "trigger": "If funded 90+ days, paid 50%+, untouched 30+ days",
+        "action": "Create renewal outreach task",
+        "channel": "task"
+      },
+      {
+        "name": "Escalate rotting deals",
+        "trigger": "If deal in stage 14+ days, no touch 10+ days",
+        "action": "Notify sales manager in Slack",
+        "channel": "slack"
+      },
+      {
+        "name": "Alert on going cold deals",
+        "trigger": "If no activity 7+ days, open deal",
+        "action": "Assign follow-up task to owner",
+        "channel": "task"
+      },
+      {
+        "name": "Cross-sell funded merchants",
+        "trigger": "If funded, no second product, untouched 30+ days",
+        "action": "Send cross-sell email",
+        "channel": "email"
+      },
+      {
+        "name": "Re-engage declined deals",
+        "trigger": "If declined 60–180 days ago, untouched 60+ days",
+        "action": "Create call task for re-engagement",
+        "channel": "task"
+      }
+    ]
+  },
+  "apex": {
+    "headline": "$1,096,000 open, $673,000 at risk, $581,000 in renewal/cross-sell/re-engage. 13 deals flagged.",
+    "findings": [
+      {
+        "title": "Renewal-ready funded merchants",
+        "severity": "high",
+        "detail": "3 funded deals, $390,000, 99–128d untouched, >66% paid.",
+        "dealIds": [
+          "A-2905",
+          "A-2912",
+          "A-2918"
+        ],
+        "recommendedAction": "Call and pitch renewal offer today",
+        "channel": "slack"
+      },
+      {
+        "title": "Rotting deals",
+        "severity": "high",
+        "detail": "3 open deals, $385,000, stuck 15–24d, 12–17d no touch.",
+        "dealIds": [
+          "A-3010",
+          "A-3015",
+          "A-3019"
+        ],
+        "recommendedAction": "Escalate with underwriting and call merchants",
+        "channel": "slack"
+      },
+      {
+        "title": "Going cold",
+        "severity": "high",
+        "detail": "3 open deals, $288,000, 8–10d no touch, 9–12d in stage.",
+        "dealIds": [
+          "A-3025",
+          "A-3030",
+          "A-3034"
+        ],
+        "recommendedAction": "Call and re-engage decision makers now",
+        "channel": "slack"
+      },
+      {
+        "title": "Cross-sell candidates",
+        "severity": "medium",
+        "detail": "2 funded merchants, $191,000, 44–55d since funding, no 2nd product.",
+        "dealIds": [
+          "A-2925",
+          "A-2930"
+        ],
+        "recommendedAction": "Email cross-sell offers today",
+        "channel": "email"
+      },
+      {
+        "title": "Re-engage declined deals",
+        "severity": "medium",
+        "detail": "2 declined deals, $160,000, 85–100d since decline.",
+        "dealIds": [
+          "A-2810",
+          "A-2820"
+        ],
+        "recommendedAction": "Task BDR to re-approach this week",
+        "channel": "task"
+      }
+    ],
+    "rules": [
+      {
+        "name": "Flag renewal-ready funded deals",
+        "trigger": "Funded 90+ days, 50%+ paid",
+        "action": "Slack renewal opportunity to AE",
+        "channel": "slack"
+      },
+      {
+        "name": "Escalate rotting deals",
+        "trigger": "Deal in stage 14+ days",
+        "action": "Slack AE and underwriting for action",
+        "channel": "slack"
+      },
+      {
+        "name": "Alert for cold deals",
+        "trigger": "No touch 7+ days",
+        "action": "Slack AE for immediate follow-up",
+        "channel": "slack"
+      },
+      {
+        "name": "Cross-sell funded merchants",
+        "trigger": "Funded, no 2nd product, 30+ days since funding",
+        "action": "Email cross-sell offer",
+        "channel": "email"
+      },
+      {
+        "name": "Re-speak declined deals",
+        "trigger": "Declined 60–180 days ago",
+        "action": "Create BDR re-engage task",
+        "channel": "task"
+      }
+    ]
+  }
+}

@@ -13,7 +13,28 @@ import {
   computeStats,
   generateInsights,
   type Deal,
+  type CrmInsights,
 } from "./crm.js";
+
+// Disk cache for the AI insights, keyed by client id. Lets the demo load
+// instantly: the first request per client generates + caches; later loads
+// (and the committed baked file) serve straight from here. "Re-run" overwrites.
+const INSIGHTS_CACHE = path.join(PATHS.root, "data", "crm-insights.json");
+function readInsightsCache(): Record<string, CrmInsights> {
+  try {
+    return JSON.parse(fs.readFileSync(INSIGHTS_CACHE, "utf8"));
+  } catch {
+    return {};
+  }
+}
+function writeInsightsCache(obj: Record<string, CrmInsights>): void {
+  try {
+    fs.mkdirSync(path.dirname(INSIGHTS_CACHE), { recursive: true });
+    fs.writeFileSync(INSIGHTS_CACHE, JSON.stringify(obj, null, 2));
+  } catch (err) {
+    console.error("Failed to write insights cache:", err);
+  }
+}
 
 // Preset topic grid for the dashboard. Each becomes a one-click "generate" button.
 const PRESET_TOPICS: { label: string; topic: string; keyword: string }[] = [
@@ -213,10 +234,21 @@ export function createServer(client: OpenAI) {
   });
 
   // AI pass: exec summary, recommended actions, example automation rules.
+  // Cached to disk per client so the default load is instant (~1 call only the
+  // first time, or never if the baked cache is committed). "Re-run" sends
+  // { fresh: true } to force a live regeneration and refresh the cache.
   app.post("/api/crm/insights", async (req, res) => {
+    const { client: clientId, fresh } = (req.body ?? {}) as { client?: string; fresh?: boolean };
+    const client = getClient(String(clientId ?? ""));
     try {
-      const client = getClient(String((req.body as { client?: string })?.client ?? ""));
+      const cache = readInsightsCache();
+      if (!fresh && cache[client.id]) {
+        res.json({ insights: cache[client.id], cached: true });
+        return;
+      }
       const insights = await generateInsights(client.deals);
+      cache[client.id] = insights;
+      writeInsightsCache(cache);
       res.json({ insights });
     } catch (err) {
       console.error(err);
