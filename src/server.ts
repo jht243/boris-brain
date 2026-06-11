@@ -5,6 +5,15 @@ import OpenAI from "openai";
 import { PATHS } from "./config.js";
 import { draftArticle, reviseArticle } from "./generate.js";
 import { scoreSeo } from "./seo.js";
+import {
+  CLIENTS,
+  getClient,
+  RULES,
+  computeSegments,
+  computeStats,
+  generateInsights,
+  type Deal,
+} from "./crm.js";
 
 // Preset topic grid for the dashboard. Each becomes a one-click "generate" button.
 const PRESET_TOPICS: { label: string; topic: string; keyword: string }[] = [
@@ -180,6 +189,69 @@ export function createServer(client: OpenAI) {
     } catch (err) {
       res.status(500).json({ error: String(err) });
     }
+  });
+
+  // ---- CRM Insights demo -------------------------------------------------
+  // The consultant's client list for the "Choose client" dropdown.
+  app.get("/api/crm/clients", (_req, res) => {
+    res.json({
+      clients: CLIENTS.map((c) => ({ id: c.id, name: c.name, vertical: c.vertical })),
+    });
+  });
+
+  // Pipeline + deterministic segments + stats for one client. No LLM.
+  app.get("/api/crm/pipeline", (req, res) => {
+    const client = getClient(String(req.query.client ?? ""));
+    res.json({
+      clientId: client.id,
+      clientName: client.name,
+      deals: client.deals,
+      segments: computeSegments(client.deals),
+      stats: computeStats(client.deals),
+      rules: RULES,
+    });
+  });
+
+  // AI pass: exec summary, recommended actions, example automation rules.
+  app.post("/api/crm/insights", async (req, res) => {
+    try {
+      const client = getClient(String((req.body as { client?: string })?.client ?? ""));
+      const insights = await generateInsights(client.deals);
+      res.json({ insights });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // Simulated "send to Slack / email / create task" so the demo's action
+  // buttons feel real without wiring up live integrations.
+  app.post("/api/crm/action", (req, res) => {
+    const { channel, dealIds, message, client } = req.body as {
+      channel?: string;
+      dealIds?: string[];
+      message?: string;
+      client?: string;
+    };
+    const ids = Array.isArray(dealIds) ? dealIds : [];
+    const deals = getClient(String(client ?? "")).deals.filter((d) => ids.includes(d.id));
+    const names = deals.map((d: Deal) => d.org);
+    let confirmation: string;
+    switch (channel) {
+      case "slack":
+        confirmation = `Posted to #sales-alerts — pinged the owners on ${ids.length} deal${ids.length === 1 ? "" : "s"} (${names.slice(0, 3).join(", ")}${names.length > 3 ? "…" : ""}).`;
+        break;
+      case "email":
+        confirmation = `Drafted ${ids.length} follow-up email${ids.length === 1 ? "" : "s"} to the deal owners and queued them in the outbox.`;
+        break;
+      case "task":
+        confirmation = `Created ${ids.length} Pipedrive activit${ids.length === 1 ? "y" : "ies"} due tomorrow 9:00am, assigned to each deal's owner.`;
+        break;
+      default:
+        res.status(400).json({ error: "unknown channel" });
+        return;
+    }
+    res.json({ ok: true, channel, count: ids.length, confirmation, message: message ?? null });
   });
 
   return app;
