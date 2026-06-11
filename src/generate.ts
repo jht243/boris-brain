@@ -174,11 +174,27 @@ function buildCta(): string {
   return `${BRAND.name} builds custom, data-driven automation systems tailored to your business, so your CRM data stays clean and nothing falls through the cracks. [Get in touch with Axis Consulting](${BRAND.ctaUrl}) to map the highest-impact fixes for your stack.`;
 }
 
+/** Heading -> anchor slug (matches the dashboard renderer's heading ids). */
+function headingSlug(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 function assemble(plan: ArticlePlan, sectionBodies: string[], faqBlock: string): string {
+  // Axis publishes a Table of Contents upfront on ~71% of posts. Build it from the headings.
+  const tocHeadings = [
+    ...plan.sections.map((s) => s.h2),
+    "Frequently Asked Questions",
+    "Work With Axis Consulting",
+  ];
+  const toc =
+    "## Table of Contents\n\n" +
+    tocHeadings.map((h) => `- [${h}](#${headingSlug(h)})`).join("\n");
+
   const parts: string[] = [];
   parts.push(`# ${plan.title}`);
   parts.push(`**Meta description:** ${plan.metaDescription}`);
   parts.push(plan.intro.trim());
+  parts.push(toc);
   plan.sections.forEach((s, i) => {
     parts.push(`## ${s.h2}`);
     parts.push(sectionBodies[i]!.trim());
