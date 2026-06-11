@@ -31,6 +31,28 @@
   header .logo { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; font-weight: 800; color: #fff; }
   header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: .2px; }
   header .sub { font-size: 12px; color: #aab2bb; }
+
+  /* Brain Config dropdown */
+  .brain-config { position: relative; display: inline-flex; margin-left: 16px; }
+  .brain-config-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255,255,255,0.08); color: #cdd5de; border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; font-size: 11.5px; font-weight: 600; cursor: default; letter-spacing: .3px; transition: all .15s; user-select: none; }
+  .brain-config:hover .brain-config-pill { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); color: #fff; }
+  .brain-config-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(31,138,76,.25); }
+  .brain-config-pill .chev { width: 9px; height: 9px; margin-left: 2px; transition: transform .2s; opacity: .7; }
+  .brain-config:hover .brain-config-pill .chev { transform: rotate(180deg); }
+  .brain-config-popover { position: absolute; top: calc(100% + 8px); left: 0; width: 340px; background: #fff; color: var(--ink); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: 0 12px 30px rgba(28,32,36,.18), 0 2px 6px rgba(28,32,36,.08); padding: 16px 18px 14px; opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s; z-index: 50; text-align: left; }
+  .brain-config:hover .brain-config-popover { opacity: 1; visibility: visible; transform: translateY(0); transition: opacity .18s ease, transform .18s ease, visibility 0s; }
+  .brain-config-popover::before { content: ""; position: absolute; top: -5px; left: 24px; width: 10px; height: 10px; background: #fff; border-left: 1px solid var(--border-strong); border-top: 1px solid var(--border-strong); transform: rotate(45deg); }
+  .bc-section + .bc-section { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--border); }
+  .bc-section-title { font-size: 10px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .bc-list { list-style: none; margin: 0; padding: 0; }
+  .bc-list li { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 12.5px; color: var(--ink); line-height: 1.35; }
+  .bc-list li .icon { width: 15px; height: 15px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin-top: 1px; }
+  .bc-list li.has .icon { background: var(--green-bg); color: var(--green); }
+  .bc-list li.todo .icon { background: #eef0f2; color: var(--muted); border: 1px dashed var(--border-strong); }
+  .bc-list li.todo { color: var(--muted); }
+  .bc-list li .num { font-weight: 700; color: var(--accent-dark); }
+  .bc-list li svg { width: 9px; height: 9px; }
+  .bc-footer { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--muted); font-style: italic; line-height: 1.5; }
   .wrap { display: grid; grid-template-columns: 320px 1fr 340px; gap: 16px; padding: 16px; max-width: 1500px; margin: 0 auto; align-items: start; }
   .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
   .panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
@@ -124,6 +146,36 @@
     <div>
       <h1>Axis Brain</h1>
       <div class="sub">AI blog generator · trained on axisconsulting.io</div>
+    </div>
+    <div class="brain-config" tabindex="0">
+      <span class="brain-config-pill">
+        <span class="dot"></span>
+        Brain Config
+        <svg class="chev" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,3.5 4.5,6 7,3.5"/></svg>
+      </span>
+      <div class="brain-config-popover" role="tooltip">
+        <div class="bc-section">
+          <div class="bc-section-title">In the Axis Brain</div>
+          <ul class="bc-list">
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span><span class="num">197</span> real Axis articles ingested</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Tone &amp; cadence stats (≈10.7 words/sentence)</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Signature vocabulary &amp; phrases (data-driven)</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Founder voice — Boris Tsibelman's POV</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Structure &amp; length matched to real posts</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Their exact CTA pattern (woven into FAQ)</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Live retrieval of relevant posts per topic (RAG)</span></li>
+            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Human-voice guardrails (no dashes, emojis, filler)</span></li>
+          </ul>
+        </div>
+        <div class="bc-section">
+          <div class="bc-section-title">Not yet in the brain</div>
+          <ul class="bc-list">
+            <li class="todo"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2.5" y1="4.5" x2="6.5" y2="4.5"/></svg></span><span>LinkedIn posts (different format)</span></li>
+            <li class="todo"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2.5" y1="4.5" x2="6.5" y2="4.5"/></svg></span><span>Past SEO / ranking performance data</span></li>
+          </ul>
+        </div>
+        <div class="bc-footer">Trained on axisconsulting.io. The brain rebuilds from the live site on each deploy.</div>
+      </div>
     </div>
   </div>
   <div class="sub">Theme: using AI to improve CRM data</div>
