@@ -31,12 +31,14 @@
   header .logo { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; font-weight: 800; color: #fff; }
   header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: .2px; }
   header .sub { font-size: 12px; color: #aab2bb; }
-  /* Client picker (top-right) */
-  .client-picker { display: flex; align-items: center; gap: 8px; }
-  .client-picker label { font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: #aab2bb; }
-  .client-picker select { appearance: none; -webkit-appearance: none; background: rgba(255,255,255,0.08) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 9 9' fill='none' stroke='%23cdd5de' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><polyline points='2,3.5 4.5,6 7,3.5'/></svg>") no-repeat right 10px center; color: #fff; border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; font-size: 12.5px; font-weight: 600; padding: 6px 28px 6px 12px; cursor: pointer; transition: all .15s; }
-  .client-picker select:hover { background-color: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
-  .client-picker select option { color: #1c2024; }
+  /* Client picker (top-right) — mirrors the Brain Config pill */
+  .client-pick { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 6px 30px 6px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; transition: background .15s, border-color .15s; }
+  .client-pick:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
+  .client-pick .cp-label { font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #8a929b; pointer-events: none; }
+  .client-pick select { appearance: none; -webkit-appearance: none; background: none; border: 0; outline: none; color: #fff; font-family: var(--sans); font-size: 12.5px; font-weight: 600; letter-spacing: .2px; cursor: pointer; padding: 0; margin: 0; }
+  .client-pick select option { color: #1c2024; }
+  .client-pick .cp-chev { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; color: #cdd5de; opacity: .8; pointer-events: none; transition: transform .2s; }
+  .client-pick:hover .cp-chev { transform: translateY(-50%) translateY(1px); }
 
   /* Brain Config dropdown */
   .brain-config { position: relative; display: inline-flex; margin-left: 16px; }
@@ -330,13 +332,14 @@
       </div>
     </div>
   </div>
-  <div class="client-picker">
-    <label for="clientPick">Client</label>
-    <select id="clientPick">
+  <div class="client-pick">
+    <span class="cp-label">Client</span>
+    <select id="clientPick" aria-label="Client">
       <option value="axis">Axis Consulting</option>
       <option value="lumen">Lumen Health</option>
       <option value="vantage">Vantage Realty</option>
     </select>
+    <svg class="cp-chev" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,3.5 4.5,6 7,3.5"/></svg>
   </div>
 </header>
 
