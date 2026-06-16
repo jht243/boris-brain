@@ -31,6 +31,12 @@
   header .logo { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; font-weight: 800; color: #fff; }
   header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: .2px; }
   header .sub { font-size: 12px; color: #aab2bb; }
+  /* Client picker (top-right) */
+  .client-picker { display: flex; align-items: center; gap: 8px; }
+  .client-picker label { font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: #aab2bb; }
+  .client-picker select { appearance: none; -webkit-appearance: none; background: rgba(255,255,255,0.08) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 9 9' fill='none' stroke='%23cdd5de' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><polyline points='2,3.5 4.5,6 7,3.5'/></svg>") no-repeat right 10px center; color: #fff; border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; font-size: 12.5px; font-weight: 600; padding: 6px 28px 6px 12px; cursor: pointer; transition: all .15s; }
+  .client-picker select:hover { background-color: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
+  .client-picker select option { color: #1c2024; }
 
   /* Brain Config dropdown */
   .brain-config { position: relative; display: inline-flex; margin-left: 16px; }
@@ -59,6 +65,8 @@
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .chip { border: 1px solid var(--border-strong); background: #fff; color: var(--ink-soft); border-radius: 8px; padding: 9px 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; text-align: left; transition: all .12s; }
   .chip:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-soft); }
+  .chip:disabled { opacity: .45; cursor: not-allowed; }
+  .chip:disabled:hover { border-color: var(--border-strong); color: var(--ink-soft); background: #fff; }
   label { display: block; font-size: 12px; color: var(--muted); margin: 14px 0 5px; font-weight: 600; }
   input[type=text] { width: 100%; padding: 9px 11px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 13.5px; font-family: var(--sans); }
   input[type=text]:focus { outline: none; border-color: var(--accent); }
@@ -300,8 +308,8 @@
   <div class="brand">
     <div class="logo">A</div>
     <div>
-      <h1>Axis Brain</h1>
-      <div class="sub">AI blog generator · trained on axisconsulting.io</div>
+      <h1 id="brandTitle">Axis Brain</h1>
+      <div class="sub" id="brandSub">AI blog generator · trained on axisconsulting.io</div>
     </div>
     <div class="brain-config" tabindex="0">
       <span class="brain-config-pill">
@@ -311,30 +319,25 @@
       </span>
       <div class="brain-config-popover" role="tooltip">
         <div class="bc-section">
-          <div class="bc-section-title">In the Axis Brain</div>
-          <ul class="bc-list">
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span><span class="num">197</span> real Axis articles ingested</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Tone &amp; cadence stats (≈10.7 words/sentence)</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Signature vocabulary &amp; phrases (data-driven)</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Founder voice — Boris Tsibelman's POV</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Structure &amp; length matched to real posts</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Their exact CTA pattern (woven into FAQ)</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Live retrieval of relevant posts per topic (RAG)</span></li>
-            <li class="has"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span><span>Human-voice guardrails (no dashes, emojis, filler)</span></li>
-          </ul>
+          <div class="bc-section-title" id="bcTitle">In the Axis Brain</div>
+          <ul class="bc-list" id="bcHas"></ul>
         </div>
         <div class="bc-section">
           <div class="bc-section-title">Not yet in the brain</div>
-          <ul class="bc-list">
-            <li class="todo"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2.5" y1="4.5" x2="6.5" y2="4.5"/></svg></span><span>LinkedIn posts (different format)</span></li>
-            <li class="todo"><span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2.5" y1="4.5" x2="6.5" y2="4.5"/></svg></span><span>Past SEO / ranking performance data</span></li>
-          </ul>
+          <ul class="bc-list" id="bcTodo"></ul>
         </div>
-        <div class="bc-footer">Trained on axisconsulting.io. The brain rebuilds from the live site on each deploy.</div>
+        <div class="bc-footer" id="bcFooter">Trained on axisconsulting.io. The brain rebuilds from the live site on each deploy.</div>
       </div>
     </div>
   </div>
-  <div class="sub" id="headerSub">Theme: using AI to improve CRM data</div>
+  <div class="client-picker">
+    <label for="clientPick">Client</label>
+    <select id="clientPick">
+      <option value="axis">Axis Consulting</option>
+      <option value="lumen">Lumen Health</option>
+      <option value="vantage">Vantage Realty</option>
+    </select>
+  </div>
 </header>
 
 <nav class="tabs">
@@ -536,6 +539,7 @@ async function loadPresets(){
     const t = window._topics[btn.dataset.i];
     $("topic").value = t.topic; $("keyword").value = t.keyword; generate();
   });
+  setGenerationEnabled(!demoClient); // chips were just re-rendered — re-apply state
 }
 
 function setContent(md){
@@ -609,6 +613,7 @@ function startGen(msgs, stage){
 function stopGen(){ if (genTimer){ clearInterval(genTimer); genTimer = null; } }
 
 async function generate(){
+  if (demoClient) return; // generation disabled for the fictional demo clients
   const topic = $("topic").value.trim();
   const keyword = $("keyword").value.trim();
   if (topic.length < 3){ $("topic").focus(); return; }
@@ -623,6 +628,7 @@ async function generate(){
     // Stage 1: draft + SEO score (fast, parallel) — its own request.
     const r = await fetch("/api/generate",{method:"POST",headers:JHDR,body:JSON.stringify({topic, keyword: keyword||undefined})});
     const data = await r.json();
+    if (r.status === 429 && data.limited){ stopGen(); alert(data.error); return; }
     if (!r.ok) throw new Error(data.error||"failed");
     currentPath = data.outputPath;
     renderSources(data.sources); // the real Axis posts this draft was modeled on (persists through stage 2)
@@ -705,6 +711,88 @@ let selected = new Set();  // selected deal ids
 let crmLoaded = false;
 let currentClient = null;  // selected client id
 
+// --- Client brain picker (header) ---
+// Demo-only: switching a client just reskins the brand + Brain Config copy so a
+// buyer can see that each client gets its own trained brain. The actual brain
+// behind the generator is unchanged.
+const CLIENTS = {
+  axis: {
+    brand: "Axis Brain",
+    sub: "AI blog generator · trained on axisconsulting.io",
+    title: "In the Axis Brain",
+    footer: "Trained on axisconsulting.io. The brain rebuilds from the live site on each deploy.",
+    has: [
+      ['<span class="num">197</span> real Axis articles ingested', true],
+      ["Tone &amp; cadence stats (≈10.7 words/sentence)", false],
+      ["Signature vocabulary &amp; phrases (data-driven)", false],
+      ["Founder voice — Boris Tsibelman's POV", false],
+      ["Structure &amp; length matched to real posts", false],
+      ["Their exact CTA pattern (woven into FAQ)", false],
+      ["Live retrieval of relevant posts per topic (RAG)", false],
+      ["Human-voice guardrails (no dashes, emojis, filler)", false],
+    ],
+    todo: ["LinkedIn posts (different format)", "Past SEO / ranking performance data"],
+  },
+  lumen: {
+    brand: "Lumen Brain",
+    sub: "AI blog generator · trained on lumenhealth.io",
+    title: "In the Lumen Brain",
+    footer: "Trained on lumenhealth.io. The brain rebuilds from the live site on each deploy.",
+    has: [
+      ['<span class="num">312</span> real Lumen articles ingested', true],
+      ["Tone &amp; cadence stats (≈14.2 words/sentence)", false],
+      ["Patient-friendly vocabulary &amp; phrases (data-driven)", false],
+      ["Founder voice — Dr. Priya Nair's POV", false],
+      ["HIPAA-aware claims &amp; disclaimer patterns", false],
+      ["Their exact CTA pattern (book a consult)", false],
+      ["Live retrieval of relevant posts per topic (RAG)", false],
+      ["Human-voice guardrails (no dashes, emojis, filler)", false],
+    ],
+    todo: ["Clinical study citations library", "Spanish-language variants"],
+  },
+  vantage: {
+    brand: "Vantage Brain",
+    sub: "AI blog generator · trained on vantagerealty.com",
+    title: "In the Vantage Brain",
+    footer: "Trained on vantagerealty.com. The brain rebuilds from the live site on each deploy.",
+    has: [
+      ['<span class="num">88</span> real Vantage articles ingested', true],
+      ["Tone &amp; cadence stats (≈9.4 words/sentence)", false],
+      ["Local-market vocabulary &amp; neighborhood phrasing", false],
+      ["Founder voice — Marcus Reed's POV", false],
+      ["Listing &amp; market-report structure matched", false],
+      ["Their exact CTA pattern (schedule a showing)", false],
+      ["Live retrieval of relevant posts per topic (RAG)", false],
+      ["Human-voice guardrails (no dashes, emojis, filler)", false],
+    ],
+    todo: ["MLS data feed integration", "Video tour scripts"],
+  },
+};
+const CHECK_ICON = '<span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,7 7,2.5"/></svg></span>';
+const DASH_ICON = '<span class="icon"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2.5" y1="4.5" x2="6.5" y2="4.5"/></svg></span>';
+// Only the real Axis brain can actually generate; the fictional demo clients
+// have their generate controls deactivated.
+let demoClient = false;
+function setGenerationEnabled(on){
+  const btn = $("genBtn");
+  btn.disabled = !on;
+  btn.title = on ? "" : "Generation is available for Axis Consulting in this demo.";
+  document.querySelectorAll("#presets .chip").forEach(c => { c.disabled = !on; });
+}
+function applyClient(id){
+  const c = CLIENTS[id] || CLIENTS.axis;
+  $("brandTitle").textContent = c.brand;
+  $("brandSub").textContent = c.sub;
+  $("bcTitle").textContent = c.title;
+  $("bcFooter").textContent = c.footer;
+  $("bcHas").innerHTML = c.has.map(([t]) => `<li class="has">${CHECK_ICON}<span>${t}</span></li>`).join("");
+  $("bcTodo").innerHTML = c.todo.map(t => `<li class="todo">${DASH_ICON}<span>${t}</span></li>`).join("");
+  demoClient = id !== "axis";
+  setGenerationEnabled(!demoClient);
+}
+$("clientPick").addEventListener("change", e => applyClient(e.target.value));
+applyClient("axis");
+
 // --- Tab switching ---
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
   document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
@@ -712,9 +800,6 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
   const view = t.dataset.view;
   $("view-blog").hidden = view !== "blog";
   $("view-crm").hidden = view !== "crm";
-  $("headerSub").textContent = view === "crm"
-    ? "AI insights on your Pipedrive pipeline"
-    : "Theme: using AI to improve CRM data";
   if (view === "crm" && !crmLoaded) loadCrm();
 });
 

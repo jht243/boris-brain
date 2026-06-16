@@ -50,6 +50,28 @@ const PRESET_TOPICS: { label: string; topic: string; keyword: string }[] = [
   { label: "AI Lead Scoring", topic: "Using AI to score and prioritize CRM leads", keyword: "AI lead scoring CRM" },
 ];
 
+// Per-client daily cap on article generation. Quiet by default — callers under
+// the limit never hear about it; only the request that would exceed 3/day is
+// rejected. In-memory + per-day key, keyed by client IP (resets at UTC midnight
+// and on restart, which is fine for a single free-tier instance).
+const MAX_ARTICLES_PER_DAY = 3;
+const genCounts = new Map<string, { day: string; count: number }>();
+function dayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+// Returns true if the caller is allowed (and records the use); false if capped.
+function takeArticleSlot(ip: string): boolean {
+  const today = dayKey();
+  const rec = genCounts.get(ip);
+  if (!rec || rec.day !== today) {
+    genCounts.set(ip, { day: today, count: 1 });
+    return true;
+  }
+  if (rec.count >= MAX_ARTICLES_PER_DAY) return false;
+  rec.count += 1;
+  return true;
+}
+
 function slugify(s: string): string {
   return s
     .toLowerCase()
@@ -73,6 +95,14 @@ export function createServer(client: OpenAI) {
     const { topic, keyword } = req.body as { topic?: string; keyword?: string };
     if (!topic || typeof topic !== "string" || topic.trim().length < 3) {
       res.status(400).json({ error: "topic required" });
+      return;
+    }
+    const ip = (req.headers["x-forwarded-for"]?.toString().split(",")[0].trim()) || req.ip || "unknown";
+    if (!takeArticleSlot(ip)) {
+      res.status(429).json({
+        error: "Sorry, you've reached the max articles per hour generation. Please try back tomorrow",
+        limited: true,
+      });
       return;
     }
     const outPath = path.join(PATHS.outputDir, `${Date.now()}-${slugify(keyword || topic)}.md`);
